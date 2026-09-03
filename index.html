@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>BETBAR-ORACLE | V19 STUDIO EDITION</title>
+    <title>BETBAR-ORACLE | V19.1 STUDIO EDITION</title>
     
     <style>
         :root {
@@ -17,7 +17,7 @@
             --gold-accent: #fbbf24;
             --green-value: #10b981;
             --red-value: #ef4444;
-            --neon-orange: #ff7700; /* Nuova tinta per lo studio BetBar */
+            --neon-orange: #ff7700;
         }
 
         * { box-sizing: border-box; }
@@ -80,7 +80,7 @@
         .api-btn { width: 100%; background: linear-gradient(90deg, var(--cyan-accent), #00a2ff); color: #000; border: none; padding: 15px; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 1rem; margin-top: 10px; box-shadow: 0 0 15px rgba(0,240,255,0.3);}
         .api-btn:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(0,240,255,0.6); }
 
-        /* EDITOR COMPARAZIONE (CENTRO) */
+        /* EDITOR COMPARAZIONE */
         .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;}
         .editor-title { font-size: 1.4rem; font-weight: 900; color: #fff; display:flex; align-items:center; gap: 10px;}
         .editor-title span { color: var(--cyan-accent); }
@@ -95,18 +95,17 @@
         .comp-row input:focus { border-color: var(--neon-orange); box-shadow: 0 0 10px rgba(255,119,0,0.3); background: rgba(255,119,0,0.05);}
         .comp-row .bookie-name { font-size: 1.1rem; background: rgba(255,255,255,0.05); border-color: var(--gold-accent); color: var(--gold-accent);}
 
-        /* TELEGRAM DESK (DESTRA) */
+        /* TELEGRAM DESK */
         .tg-header { font-size: 1.1rem; font-weight: 900; color: var(--violet-accent); text-transform: uppercase; margin-bottom: 15px; text-align: center; border-bottom: 1px solid rgba(176,38,255,0.3); padding-bottom: 10px;}
         .tg-textarea { width: 100%; flex-grow: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.95rem; outline: none; resize: none; margin-bottom: 15px;}
         .tg-textarea:focus { border-color: var(--violet-accent); }
         .btn-tg { width: 100%; background: var(--violet-accent); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.2s;}
         .btn-tg:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); }
 
-        /* SCHERMATA FULL-SCREEN BROADCAST (STUDIO EDITION) */
+        /* SCHERMATA FULL-SCREEN BROADCAST (STUDIO EDITION V19.1) */
         .broadcast-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; 
-            /* QUI CARICA LA TUA IMMAGINE STUDIO */
             background-image: url('sfondo.png'); 
             background-size: cover;
             background-position: center;
@@ -117,34 +116,32 @@
         }
         
         .bc-card {
-            width: 80vw; max-width: 1200px; 
-            /* Effetto Vetro per far vedere lo sfondo */
+            width: 88vw; /* Aumentato dal 80vw */
+            max-width: 1500px; /* Aumentato dal 1200px */
             background: rgba(10, 10, 10, 0.85); 
             backdrop-filter: blur(10px);
             border: 2px solid var(--neon-orange); 
             border-radius: 24px;
-            box-shadow: 0 0 50px rgba(255, 119, 0, 0.25), inset 0 0 20px rgba(255, 119, 0, 0.1);
-            padding: 40px 50px; text-align: center; position: relative;
-            /* Spinge la tabella verso il basso per non coprire il logo gigante nello sfondo */
-            margin-top: 30vh; 
+            box-shadow: 0 0 50px rgba(255, 119, 0, 0.3), inset 0 0 20px rgba(255, 119, 0, 0.1);
+            padding: 50px 70px; /* Aumentato padding */
+            text-align: center; position: relative;
+            margin-top: 18vh; /* Tirato PIU' SU (era 30vh) */
         }
 
-        /* Nomi squadre grandi stile tabellone stadio */
-        .bc-match { font-size: 3.5rem; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; gap: 30px; letter-spacing: 2px; text-shadow: 0 0 20px rgba(0,0,0,0.8);}
-        .bc-vs { color: var(--neon-orange); font-size: 2.5rem; text-shadow: 0 0 20px var(--neon-orange);}
+        .bc-match { font-size: 4.5rem; /* Ingrandito */ color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 35px; display: flex; justify-content: center; align-items: center; gap: 35px; letter-spacing: 2px; text-shadow: 0 0 20px rgba(0,0,0,0.8);}
+        .bc-vs { color: var(--neon-orange); font-size: 3rem; /* Ingrandito */ text-shadow: 0 0 20px var(--neon-orange);}
         
         .bc-table-wrap { border: 2px solid var(--neon-orange); border-radius: 16px; overflow: hidden; }
         .bc-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.6);}
-        .bc-table th, .bc-table td { border: 1px solid rgba(255,119,0,0.5); padding: 20px 15px; text-align: center; font-size: 2.4rem; font-weight: 900; color: #fff; }
-        .bc-table th { color: #fff; text-transform: uppercase; font-size: 1.4rem; padding: 15px; background: rgba(255,119,0,0.15);}
-        .bc-table td:first-child { color: #fff; font-size: 2rem; text-transform: capitalize; background: rgba(255,255,255,0.05);}
+        .bc-table th, .bc-table td { border: 1px solid rgba(255,119,0,0.5); padding: 25px 20px; /* Ingrandito */ text-align: center; font-size: 3.2rem; /* Ingrandito */ font-weight: 900; color: #fff; }
+        .bc-table th { color: #fff; text-transform: uppercase; font-size: 1.8rem; /* Ingrandito */ padding: 20px; background: rgba(255,119,0,0.15);}
+        .bc-table td:first-child { color: #fff; font-size: 2.6rem; /* Ingrandito */ text-transform: capitalize; background: rgba(255,255,255,0.05);}
         
-        /* Evidenziazione Bookmakers come da tua richiesta */
         .bk-goldbet { color: #FFcc00 !important; }
         .bk-sisal { color: #00ff00 !important; }
         .bk-dazn { font-style: italic; }
 
-        .bc-footer { margin-top: 25px; color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: bold; display: flex; justify-content: space-between; padding: 0 10px; text-shadow: 0 0 5px #000;}
+        .bc-footer { margin-top: 25px; color: rgba(255,255,255,0.6); font-size: 1.3rem; font-weight: bold; display: flex; justify-content: space-between; padding: 0 10px; text-shadow: 0 0 5px #000;}
         
     </style>
 </head>
@@ -156,9 +153,12 @@
         <div class="match-tabs" id="match-tabs-container"></div>
         <div class="top-tools">
             <select class="gc-select" id="match-count" onchange="initWorkspace()" title="Slot Attivi">
-                <option value="1" selected>1 Match</option>
-                <option value="3">3 Match</option>
+                <option value="1">1 Match</option>
+                <option value="2">2 Match</option>
+                <option value="3" selected>3 Match</option>
+                <option value="4">4 Match</option>
                 <option value="5">5 Match</option>
+                <option value="10">10 Match (Serie A)</option>
             </select>
             <div class="api-status" title="Status TheOdds API">API: <span id="api-credits-used">0</span> / 500</div>
         </div>
@@ -171,7 +171,7 @@
         <div class="col-right" id="col-right"></div>
     </div>
 
-    <!-- SCHERMATA FULL-SCREEN BROADCAST (STUDIO EDITION) -->
+    <!-- SCHERMATA FULL-SCREEN BROADCAST -->
     <div class="broadcast-screen" id="broadcast-screen" onclick="closeBroadcastOverlay()">
         <div class="bc-card">
             <div class="bc-match"><span id="bc-home">BOLOGNA</span> <span class="bc-vs">VS</span> <span id="bc-away">LAZIO</span></div>
@@ -180,7 +180,7 @@
                 <table class="bc-table">
                     <thead>
                         <tr>
-                            <th></th><th>1</th><th>X</th><th>2</th><th>OVER<br><span style="font-size:1.2rem;">2.5</span></th><th>UNDER<br><span style="font-size:1.2rem;">2.5</span></th><th>GG</th>
+                            <th></th><th>1</th><th>X</th><th>2</th><th>OVER<br><span style="font-size:1.4rem;">2.5</span></th><th>UNDER<br><span style="font-size:1.4rem;">2.5</span></th><th>GG</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -209,7 +209,6 @@
 
     <script>
         const API_KEY = "ebb57f70617f6f4bb3f531b20685b755"; 
-        
         let activeMatchId = 1;
         const DEFAULT_BOOKIES = ["GoldBet", "Sisal", "DAZNBET"];
 
@@ -218,7 +217,7 @@
             let tabsHtml = ''; let leftHtml = ''; let centerHtml = ''; let rightHtml = '';
             
             for(let i=1; i<=10; i++) {
-                if(i <= count) tabsHtml += `<button class="m-tab" id="tab-btn-${i}" onclick="selectMatch(${i})">🏟️ MATCH ${i}</button>`;
+                if(i <= count) tabsHtml += `<button class="m-tab" id="tab-btn-${i}" onclick="selectMatch(${i})">🏟️ M${i}</button>`;
                 
                 // COLONNA 1: INPUT
                 leftHtml += `
@@ -325,7 +324,7 @@
             document.getElementById(`m${id}-ta-disp`).textContent = a.toUpperCase();
         }
 
-        // MOTORE DI ESTRAZIONE API (Migliorato per evitare blocchi)
+        // MOTORE DI ESTRAZIONE API
         async function fetchOdds(id) {
             let h = document.getElementById(`m${id}-home`).value.trim().toLowerCase();
             let a = document.getElementById(`m${id}-away`).value.trim().toLowerCase();
@@ -338,7 +337,6 @@
             btn.style.background = "var(--gold-accent)"; btn.style.color = "#000";
 
             try {
-                // Chiedo solo h2h e totals per garantire stabilità. Il GG spesso non è fornito gratuitamente.
                 const url = `https://api.the-odds-api.com/v4/sports/${lKey}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals`;
                 const response = await fetch(url);
                 
@@ -349,13 +347,11 @@
                 const data = await response.json();
                 
                 let matchData = null;
-                // Ricerca elastica: controlla se una stringa è contenuta nell'altra
                 for (let match of data) {
                     let apiHome = match.home_team.toLowerCase(); 
                     let apiAway = match.away_team.toLowerCase();
                     if (apiHome.includes(h) || h.includes(apiHome) || apiAway.includes(a) || a.includes(apiAway)) {
                         matchData = match; 
-                        console.log("Match trovato:", matchData.home_team, "vs", matchData.away_team);
                         break;
                     }
                 }
@@ -368,7 +364,6 @@
                 let bookies = matchData.bookmakers || [];
                 if(bookies.length === 0) { alert("Nessuna quota disponibile per questo match sui server europei."); throw new Error("No odds"); }
 
-                // Riempi le 3 righe (usiamo i primi 3 bookmakers dell'API per riempire la bozza)
                 for(let r=0; r<3; r++) {
                     let rIdx = r+1;
                     if(bookies[r]) {
@@ -399,7 +394,6 @@
                         document.getElementById(`m${id}-b${rIdx}-2`).value = oddsMap['2'] || "-";
                         document.getElementById(`m${id}-b${rIdx}-o`).value = oddsMap['O'] || "-";
                         document.getElementById(`m${id}-b${rIdx}-u`).value = oddsMap['U'] || "-";
-                        // GG non fornito stabilmente dall'API base, lo lasciamo vuoto o mettiamo un placeholder
                         document.getElementById(`m${id}-b${rIdx}-g`).value = ""; 
                     }
                 }
@@ -420,7 +414,7 @@
             }, 3000);
         }
 
-        // GENERATORE OVERLAY BROADCAST (STUDIO EDITION)
+        // GENERATORE OVERLAY BROADCAST
         function launchBroadcast(id) {
             let h = document.getElementById(`m${id}-home`).value || "CASA";
             let a = document.getElementById(`m${id}-away`).value || "OSPITE";
@@ -433,7 +427,6 @@
                 let cellName = document.getElementById(`bo-name-${r}`);
                 cellName.textContent = bName;
                 
-                // Coloriamo i bookmaker per mantenere lo stile della foto
                 cellName.className = '';
                 if(bName.toLowerCase().includes('gold')) cellName.classList.add('bk-goldbet');
                 if(bName.toLowerCase().includes('sisal')) cellName.classList.add('bk-sisal');
