@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BETBAR-ORACLE | V17 BROADCAST</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00f0ff">
+
+    <style>
+        :root {
+            --bg-color: #02040a;
+            --panel-bg: rgba(10, 15, 25, 0.95);
+            --border-glow: rgba(0, 240, 255, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --cyan-accent: #00f0ff;
+            --violet-accent: #b026ff;
+            --gold-accent: #fbbf24;
+            --green-value: #10b981;
+            --red-value: #ef4444;
+            --neon-green: #00ff00;
+        }
+
+        * { box-sizing: border-box; }
+        
+        html, body { 
+            margin: 0; padding: 0; width: 100vw; height: 100vh; 
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at center, #0a1128 0%, #02040a 100%);
+            color: var(--text-main); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            overflow: hidden; 
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan-accent); }
+
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center; 
+            height: 60px; background: #000; border-bottom: 2px solid var(--violet-accent);
+            padding: 0 20px; box-shadow: 0 0 20px rgba(176, 38, 255, 0.2);
+            z-index: 100; position: relative;
+        }
+        .logo-area { font-size: 1.8rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--cyan-accent); letter-spacing: 2px; }
+        .logo-area span { color: var(--cyan-accent); }
+        
+        .match-tabs { display: flex; gap: 5px; flex-grow: 1; justify-content: center; overflow-x: auto; }
+        .m-tab { background: transparent; color: var(--text-muted); border: none; font-weight: 900; font-size: 1rem; padding: 0 15px; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; outline: none; }
+        .m-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .m-tab.active { color: var(--cyan-accent); border-bottom-color: var(--cyan-accent); background: rgba(0, 240, 255, 0.1); }
+        
+        .top-tools { display: flex; gap: 10px; align-items: center; }
+        .btn-session { background: rgba(251, 191, 36, 0.1); color: var(--gold-accent); border: 1px solid var(--gold-accent); padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: 0.2s;}
+        .btn-session:hover { background: var(--gold-accent); color: #000; }
+        .api-status { background: rgba(0,0,0,0.8); border: 1px solid var(--cyan-accent); padding: 5px 10px; border-radius: 6px; color: var(--cyan-accent); font-weight: 900; font-size: 0.85rem; box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+
+        .main-workspace {
+            display: flex; height: calc(100vh - 60px); width: 100vw; gap: 15px;
+            padding: 15px; padding-left: 4vw; 
+        }
+
+        .col-left { flex: 0 0 28%; max-width: 28%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 15px; }
+        .col-center { flex: 0 0 44%; max-width: 44%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(0,240,255,0.2); padding: 20px; box-shadow: 0 0 30px rgba(0,240,255,0.05); position: relative;}
+        .col-right { flex: 0 0 24%; max-width: 24%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(251,191,36,0.3); padding: 15px; display: flex; flex-direction: column;}
+
+        .panel-view { display: none; }
+        .panel-view.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { font-size: 0.85rem; color: var(--gold-accent); margin: 1.5rem 0 1rem 0; text-transform: uppercase; font-weight: 900; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 5px; letter-spacing: 1px;}
+        .section-title:first-child { margin-top: 0; }
+        .input-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .input-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .input-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center; position: relative; }
+        .input-box:focus-within { border-color: var(--cyan-accent); background: rgba(0,0,0,0.8);}
+        .input-box label { display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; font-weight: 900;}
+        .input-box input, .input-box select { width: 100%; background: transparent; border: none; color: #fff; font-size: 1.2rem; font-weight: 900; text-align: center; outline: none; }
+        
+        .box-home input { border-bottom: 2px solid var(--cyan-accent); } .box-home label { color: var(--cyan-accent); }
+        .box-away input { border-bottom: 2px solid var(--violet-accent); } .box-away label { color: var(--violet-accent); }
+
+        .api-btn { width: 100%; background: linear-gradient(90deg, var(--cyan-accent), #00a2ff); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 0.9rem; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,240,255,0.3);}
+        .api-btn:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(0,240,255,0.6); }
+
+        .btn-broadcast { width: 100%; background: linear-gradient(90deg, #000, #0a1128); border: 2px solid var(--neon-green); color: var(--neon-green); padding: 12px; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 1rem; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,255,0,0.2); letter-spacing: 1px;}
+        .btn-broadcast:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 25px rgba(0,255,0,0.6); }
+
+        .hero-odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;}
+        .hero-box { background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(0,240,255,0.05)); border: 2px solid rgba(0,240,255,0.3); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden;}
+        .hero-box:hover { border-color: var(--cyan-accent); box-shadow: 0 0 25px rgba(0,240,255,0.4); transform: scale(1.02);}
+        .hero-name { font-size: 1.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5);}
+        .hero-prob { font-size: 2.2rem; font-weight: 900; color: var(--cyan-accent); margin: 5px 0; text-shadow: 0 0 15px rgba(0,240,255,0.6);}
+        .hero-odds { font-size: 1.1rem; color: var(--green-value); font-weight: 900;}
+        .hero-box::after { content: '+ CARRELLO'; position: absolute; bottom: 0; left: 0; right: 0; background: var(--cyan-accent); color: #000; font-size: 0.7rem; font-weight: bold; padding: 2px; transform: translateY(100%); transition: 0.2s; }
+        .hero-box:hover::after { transform: translateY(0); }
+
+        .live-panel { background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;}
+        .live-title { color: var(--red-value); font-size: 0.8rem; font-weight: 900; text-align: center; margin-bottom: 10px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        .live-title::before, .live-title::after { content: '🔴'; font-size: 0.6rem; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .possession-container { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 15px; text-align: center; }
+        .poss-slider-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .poss-label { font-size: 1.2rem; font-weight: 900; width: 50px;}
+        .poss-label-h { color: var(--cyan-accent); text-align: right;}
+        .poss-label-a { color: var(--violet-accent); text-align: left;}
+        input[type=range].poss-slider { -webkit-appearance: none; width: 100%; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; outline: none;}
+        input[type=range].poss-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; cursor: pointer; border: 3px solid var(--gold-accent); box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+        
+        .matrix-container { display: grid; grid-template-columns: 45px repeat(7, 1fr); gap: 3px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
+        .matrix-cell { display: flex; align-items: center; justify-content: center; height: 35px; font-size: 0.85rem; font-weight: 900; color: #fff; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);}
+        .matrix-header-osp { color: var(--violet-accent); font-size: 0.85rem; font-weight: 900; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--violet-accent);}
+        .matrix-header-home { color: var(--cyan-accent); font-size: 0.85rem; font-weight: 900; display: flex; align-items: center; justify-content: center; background: rgba(0,240,255,0.15); border-radius: 4px; border-right: 2px solid var(--cyan-accent);}
+        .matrix-corner { font-size: 0.55rem; color: var(--text-muted); font-weight: 900; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+
+        .dual-radar-wrapper { display: flex; gap: 10px; margin-bottom: 15px; }
+        .radar-container { flex: 1; background: rgba(0,0,0,0.6); border-radius: 8px; padding: 10px; border: 1px solid var(--green-value); }
+        .radar-container-safe { border-color: var(--gold-accent); }
+        .radar-header { font-size: 0.7rem; color: var(--green-value); font-weight: 900; text-transform: uppercase; margin-bottom: 8px; text-align: center; }
+        .radar-header-safe { color: var(--gold-accent); }
+        .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .radar-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; }
+        .radar-box-safe { background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3); }
+        .rb-name { font-size: 0.7rem; color: #fff; font-weight: bold; margin-bottom: 2px;}
+        .rb-prob { font-size: 1.2rem; color: var(--green-value); font-weight: 900; }
+        .radar-box-safe .rb-prob { color: var(--gold-accent); }
+        .rb-odds { font-size: 0.6rem; color: var(--text-muted); font-weight:bold; margin-top: 2px; }
+
+        .podium-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+        .podium-box { flex: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; text-align: center; position: relative;}
+        .podium-gold { border-color: var(--gold-accent); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.1); border-top: 4px solid var(--gold-accent); }
+        .podium-silver { border-color: #c0c0c0; border-top: 4px solid #c0c0c0; }
+        .podium-bronze { border-color: #cd7f32; border-top: 4px solid #cd7f32; }
+        .p-score { font-size: 1.8rem; font-weight: 900; color: #fff; display: block; letter-spacing: 2px;}
+        .p-prob { font-size: 0.9rem; color: var(--cyan-accent); font-weight: 800;}
+
+        .tabs-nav { display: flex; background: rgba(0,0,0,0.8); border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
+        .tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 10px; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--cyan-accent); border-bottom-color: var(--cyan-accent); background: rgba(0, 240, 255, 0.05);}
+        .tab-content { display: none; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; border: 1px solid rgba(255,255,255,0.05);}
+        .tab-content.active { display: block; }
+        
+        .adv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+        .stat-card { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; transition: 0.2s; position: relative; overflow:hidden;}
+        .stat-card:hover { border-color: var(--cyan-accent); }
+        .stat-name { font-size: 0.65rem; color: var(--text-main); font-weight: 900; display: block; margin-bottom: 4px;}
+        .stat-prob { font-size: 1.2rem; font-weight: 900; color: var(--cyan-accent); display: block;}
+        .stat-odds { font-size: 0.75rem; color: var(--green-value); font-weight: 800;}
+
+        .ms-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(251,191,36,0.3); padding-bottom: 10px;}
+        .ms-title { color: var(--gold-accent); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center;}
+        .sys-toggle { background: #000; border: 1px solid var(--gold-accent); color: #fff; padding: 6px; border-radius: 6px; font-weight: bold; width: 100%; text-align: center;}
+        
+        .bank-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;}
+        .bank-input { background: rgba(0,0,0,0.8); border: 2px solid var(--gold-accent); color: #fff; padding: 10px; border-radius: 6px; text-align: center; font-weight: 900; font-size: 1.2rem; width: 100%; }
+        
+        .cart-list { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; margin-bottom: 15px; overflow-y:auto; flex-grow:1;}
+        .cart-item { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); position: relative;}
+        .cart-match { font-weight: 900; font-size: 0.8rem; display: block; color: #fff;}
+        .cart-market { color: var(--cyan-accent); font-size: 0.75rem; font-weight: bold; margin-top: 2px; display: block;}
+        .cart-odds-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px;}
+        .cart-odds-input { background: #000; border: 1px solid var(--green-value); color: #fff; font-weight: 900; width: 60px; text-align: center; padding: 4px; border-radius: 4px; font-size: 0.9rem;}
+        .cart-result { font-size: 0.9rem; font-weight: 900; text-align: right;}
+        .cart-remove { position: absolute; top: 5px; right: 5px; background: transparent; color: var(--red-value); border: none; cursor: pointer; font-weight: bold; font-size: 1rem;}
+
+        .ms-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px; }
+        .ms-box { background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .ms-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 900; display: block;}
+        .ms-val { font-size: 1.4rem; font-weight: 900; color: #fff; }
+
+        .btn-script { width: 100%; background: linear-gradient(90deg, #b026ff, #6d28d9); border: none; padding: 15px; color: #fff; font-weight: 900; font-size: 0.9rem; border-radius: 8px; cursor: pointer; text-transform: uppercase; margin-top: auto;}
+
+        .val-positive { color: var(--green-value); }
+        .val-negative { color: var(--red-value); }
+        .val-roccaforte { color: var(--gold-accent); }
+
+        .editor-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .editor-content { background: #0a0f1e; border: 2px solid var(--violet-accent); padding: 25px; border-radius: 12px; width: 600px; max-width: 95%; box-shadow: 0 0 50px rgba(176, 38, 255, 0.2);}
+        .editor-title { color: var(--violet-accent); font-weight: 900; text-transform: uppercase; margin-bottom: 15px; font-size: 1.2rem; text-align: center;}
+        .editor-textarea { width: 100%; height: 300px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 0.9rem; margin-bottom: 15px;}
+        .editor-actions { display: flex; gap: 10px; }
+        .editor-btn-pub { flex: 2; background: var(--green-value); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase;}
+        .editor-btn-close { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase;}
+
+        /* CSS BROADCAST OVERLAY FULL-SCREEN (V17) */
+        .broadcast-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #050505; z-index: 9999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; cursor: pointer;
+        }
+        .bc-card {
+            width: 85vw; max-width: 1400px; background: #0a0a0a;
+            border: 4px solid var(--neon-green); border-radius: 24px;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            padding: 40px 60px; text-align: center;
+        }
+        .bc-league { background: #000; color: var(--neon-green); border: 2px solid var(--neon-green); padding: 5px 25px; border-radius: 20px; font-weight: 900; letter-spacing: 3px; display: inline-block; margin-bottom: 20px; font-size: 1.2rem;}
+        .bc-title { font-size: 6rem; font-weight: 900; color: #ff6600; text-transform: uppercase; margin-bottom: 10px; letter-spacing: -2px; text-shadow: 0 0 20px rgba(255, 102, 0, 0.4);}
+        .bc-title span { color: #fff; }
+        .bc-match { font-size: 4rem; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; display: flex; justify-content: center; align-items: center; gap: 30px; text-shadow: 0 0 15px rgba(255,255,255,0.3);}
+        .bc-vs { color: var(--neon-green); font-size: 3rem; text-shadow: 0 0 20px var(--neon-green);}
+        
+        .bc-table-wrap { border: 3px solid var(--neon-green); border-radius: 16px; overflow: hidden; box-shadow: 0 0 30px rgba(0, 255, 0, 0.15);}
+        .bc-table { width: 100%; border-collapse: collapse; background: rgba(0,255,0,0.02);}
+        .bc-table th, .bc-table td { border: 1px solid var(--neon-green); padding: 25px 15px; text-align: center; font-size: 2.2rem; font-weight: 900; color: #fff; }
+        .bc-table th { color: #fff; text-transform: uppercase; font-size: 1.6rem; padding: 20px; background: rgba(0,255,0,0.05);}
+        .bc-footer { margin-top: 30px; color: rgba(255,255,255,0.5); font-size: 1.2rem; font-weight: bold; display: flex; justify-content: space-between; padding: 0 20px;}
+
+        /* CSS Editor Modal Comparazione */
+        .comp-editor-grid { display: grid; grid-template-columns: 100px repeat(6, 1fr); gap: 5px; margin-bottom: 15px; align-items:center;}
+        .comp-editor-grid input { background: #000; border: 1px solid var(--neon-green); color: #fff; font-weight: bold; text-align: center; padding: 8px; border-radius: 4px; font-size: 1.1rem; width: 100%; outline: none;}
+        .comp-editor-label { color: #fff; font-weight: 900; font-size: 0.9rem; text-align:center;}
+    </style>
+</head>
+<body>
+    <!-- BARRA DI REGIA -->
+    <div class="top-nav">
+        <div class="logo-area">BETBAR<span>-ORACLE</span></div>
+        <div class="match-tabs" id="match-tabs-container"></div>
+        <div class="top-tools">
+            <select class="gc-select" id="match-count" onchange="initWorkspace()" title="Numero Slot Attivi">
+                <option value="1">1 Match</option><option value="3" selected>3 Match</option><option value="5">5 Match</option>
+            </select>
+            <button class="btn-session" onclick="saveSession()">💾 Salva</button>
+            <button class="btn-session" onclick="loadSession()">📂 Carica</button>
+            <div class="api-status" title="API TheOdds">API: <span id="api-credits-used">0</span> / <span id="api-credits-total">500</span></div>
+        </div>
+    </div>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="main-workspace">
+        <!-- COLONNA 1: SALA MACCHINE -->
+        <div class="col-left" id="col-left"></div>
+
+        <!-- COLONNA 2: PALCOSCENICO -->
+        <div class="col-center" id="col-center"></div>
+
+        <!-- COLONNA 3: REGISTRATORE DI CASSA -->
+        <div class="col-right">
+            <div class="ms-header">
+                <h3 class="ms-title">Cassa & Portfolio</h3>
+                <select class="sys-toggle" id="slip-mode" onchange="renderCart()">
+                    <option value="singole" selected>Modalità: SINGOLE</option>
+                    <option value="multipla">Modalità: MULTIPLA</option>
+                    <option value="sistema">Modalità: SISTEMA</option>
+                </select>
+            </div>
+
+            <div class="bank-container">
+                <div style="display: flex; gap:10px;">
+                    <div style="flex:1"><label style="font-size:0.6rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">Cassa Tot (€)</label><input type="number" id="master-bank" class="bank-input" value="1000" step="50" oninput="renderCart()"></div>
+                    <div style="flex:1" id="cap-box"><label style="font-size:0.6rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">Cap Globale (%)</label><input type="number" id="master-cap" class="bank-input" style="border-color:var(--violet-accent);" value="20" oninput="renderCart()"></div>
+                </div>
+                <div id="match-cap-box"><label style="font-size:0.6rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">Max Rischio per Match (%)</label><input type="number" id="match-cap" class="bank-input" style="border-color:var(--cyan-accent); font-size: 1rem; padding: 6px;" value="10" oninput="renderCart()"></div>
+            </div>
+
+            <div id="cart-list-container" class="cart-list"><div style="text-align:center; color:var(--text-muted); font-size:0.8rem; font-weight:bold;">Seleziona le quote per riempire il carrello.</div></div>
+            
+            <div id="sys-options" style="display:none; text-align:center; margin-bottom:15px;"><select id="sys-k" class="sys-toggle" onchange="renderCart()"></select></div>
+            
+            <div class="ms-grid" id="slip-grid-multipla" style="display:none;">
+                <div class="ms-box"><span class="ms-label">Quota Master</span><div class="ms-val" id="ms-bookie">@ 1.00</div></div>
+                <div class="ms-box"><span class="ms-label">Valore (Edge)</span><div class="ms-val" id="ms-edge">---</div></div>
+                <div class="ms-box"><span class="ms-label">Fiducia Kelly</span><div class="ms-val" id="ms-kelly">---</div></div>
+            </div>
+
+            <div class="ms-grid" id="slip-grid-sistema" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span class="ms-label">Colonne: <span id="sys-combos" style="color:var(--cyan-accent); font-size:1rem;">0</span></span><span class="ms-label">Stake/Col: <span id="sys-stake" style="color:#fff; font-size:1rem;">€ 0</span></span></div>
+                <div class="ms-box"><span class="ms-label">Ritorno Max</span><div class="ms-val val-positive" id="sys-win-max">€ 0.00</div></div>
+            </div>
+
+            <div id="slip-grid-singole" style="display:none; text-align:center; padding:10px; background:rgba(0,0,0,0.6); border-radius:8px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:0.7rem; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">Totale Esposto Portfolio</div>
+                <div id="ptf-total-invest" style="font-size:1.5rem; font-weight:900; color:var(--green-value);">€ 0</div>
+            </div>
+
+            <button class="btn-script" onclick="openEditor()">📝 Genera Analisi</button>
+        </div>
+    </div>
+
+    <!-- MODAL TELEGRAM -->
+    <div class="editor-overlay" id="editor-modal">
+        <div class="editor-content">
+            <div class="editor-title">Scrivania Telegram</div>
+            <select class="sys-toggle" id="editor-risk" onchange="generateDraftText()" style="margin-bottom:10px;">
+                <option value="none">Rischio Formazioni: Neutro</option><option value="low">Rischio: Basso (Titolari confermati)</option><option value="high">⚠️ Rischio: ALTO (Turnover)</option>
+            </select>
+            <textarea class="editor-textarea" id="editor-text"></textarea>
+            <div class="editor-actions">
+                <button class="editor-btn-close" onclick="closeEditor()">Chiudi</button>
+                <button class="editor-btn-pub" onclick="copyAndPublish()">🚀 Copia testo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CALCOLATRICE -->
+    <div class="editor-overlay" id="calc-modal">
+        <div class="editor-content" style="width:300px;">
+            <div class="editor-title" id="calc-title">Calcolatore</div>
+            <input type="number" id="calc-events" class="sys-toggle" style="margin-bottom:10px; text-align:center; font-size:1.2rem; border-color:var(--text-muted);" placeholder="Tot. Cumulativo">
+            <input type="number" id="calc-games" class="sys-toggle" style="margin-bottom:15px; text-align:center; font-size:1.2rem; border-color:var(--text-muted);" placeholder="Partite Giocate">
+            <input type="hidden" id="calc-target">
+            <div class="editor-actions">
+                <button class="editor-btn-close" onclick="closeCalc()">Annulla</button>
+                <button class="editor-btn-pub" style="background:var(--gold-accent);" onclick="applyCalc()">Calcola</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITOR COMPARAZIONE (V17) -->
+    <div class="editor-overlay" id="comp-editor-modal">
+        <div class="editor-content" style="width:700px;">
+            <div class="editor-title" style="color:var(--neon-green);">VERIFICA QUOTE BROADCAST</div>
+            <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:15px; text-align:center;">I dati sono pre-calcolati dall'Oracle. Correggi a mano per allinearli ai Bookmaker prima della diretta.</div>
+            
+            <div class="comp-editor-grid" style="grid-template-columns: 120px repeat(6, 1fr); margin-bottom:5px;">
+                <div></div><div class="comp-editor-label">1</div><div class="comp-editor-label">X</div><div class="comp-editor-label">2</div><div class="comp-editor-label">OV 2.5</div><div class="comp-editor-label">UN 2.5</div><div class="comp-editor-label">GG</div>
+            </div>
+            <!-- GOLDBET -->
+            <div class="comp-editor-grid" style="grid-template-columns: 120px repeat(6, 1fr);">
+                <div style="font-weight:900; font-size:1.1rem;"><span style="color:#FFcc00;">Gold</span><span style="color:#fff;">Bet</span></div>
+                <input type="text" id="ce-gb-1"><input type="text" id="ce-gb-x"><input type="text" id="ce-gb-2"><input type="text" id="ce-gb-o"><input type="text" id="ce-gb-u"><input type="text" id="ce-gb-g">
+            </div>
+            <!-- SISAL -->
+            <div class="comp-editor-grid" style="grid-template-columns: 120px repeat(6, 1fr);">
+                <div style="font-weight:900; font-size:1.1rem; color:#00ff00;">★Sisal</div>
+                <input type="text" id="ce-si-1"><input type="text" id="ce-si-x"><input type="text" id="ce-si-2"><input type="text" id="ce-si-o"><input type="text" id="ce-si-u"><input type="text" id="ce-si-g">
+            </div>
+            <!-- DAZNBET -->
+            <div class="comp-editor-grid" style="grid-template-columns: 120px repeat(6, 1fr);">
+                <div style="font-weight:900; font-size:1.1rem; font-style:italic; color:#fff;">DAZNBET</div>
+                <input type="text" id="ce-dz-1"><input type="text" id="ce-dz-x"><input type="text" id="ce-dz-2"><input type="text" id="ce-dz-o"><input type="text" id="ce-dz-u"><input type="text" id="ce-dz-g">
+            </div>
+
+            <div class="editor-actions" style="margin-top:20px;">
+                <button class="editor-btn-close" onclick="closeCompEditor()">Annulla</button>
+                <button class="editor-btn-pub" style="background:var(--neon-green);" onclick="launchBroadcastOverlay()">🚀 MANDA IN ONDA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCHERMATA FULL-SCREEN BROADCAST (V17) -->
+    <div class="broadcast-screen" id="broadcast-screen" onclick="closeBroadcastOverlay()">
+        <div class="bc-card">
+            <div class="bc-league" id="bc-league">SERIE A</div>
+            <div class="bc-title">BET<span>BAR</span></div>
+            <div class="bc-match"><span id="bc-home">BOLOGNA</span> <span class="bc-vs">VS</span> <span id="bc-away">LAZIO</span></div>
+            
+            <div class="bc-table-wrap">
+                <table class="bc-table">
+                    <thead>
+                        <tr>
+                            <th></th><th>1</th><th>X</th><th>2</th><th>OVER<br><span style="font-size:1rem;">2.5</span></th><th>UNDER<br><span style="font-size:1rem;">2.5</span></th><th>GG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span style="color:#FFcc00;">Gold</span><span style="color:#fff;">Bet</span></td>
+                            <td id="bo-gb-1">-</td><td id="bo-gb-x">-</td><td id="bo-gb-2">-</td><td id="bo-gb-o">-</td><td id="bo-gb-u">-</td><td id="bo-gb-g">-</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#00ff00;">★Sisal</td>
+                            <td id="bo-si-1">-</td><td id="bo-si-x">-</td><td id="bo-si-2">-</td><td id="bo-si-o">-</td><td id="bo-si-u">-</td><td id="bo-si-g">-</td>
+                        </tr>
+                        <tr>
+                            <td style="font-style:italic;">DAZNBET</td>
+                            <td id="bo-dz-1">-</td><td id="bo-dz-x">-</td><td id="bo-dz-2">-</td><td id="bo-dz-o">-</td><td id="bo-dz-u">-</td><td id="bo-dz-g">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="bc-footer">
+                <span>Quote soggette a variazioni</span>
+                <span>🔞 🛡️ ADM</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "ebb57f70617f6f4bb3f531b20685b755"; 
+        const aliasDictionary = { "italia": "italy", "spagna": "spain", "inghilterra": "england", "germania": "germany", "francia": "france", "bayern monaco": "bayern munich", "psg": "paris saint germain", "man united": "manchester united", "man city": "manchester city", "spurs": "tottenham" }; 
+
+        function translateTeam(teamName) { let t = teamName.trim().toLowerCase(); return aliasDictionary[t] || t; }
+
+        let factCache = {0: 1, 1: 1};
+        function factorial(n) { if (factCache[n]) return factCache[n]; let res = 1; for (let i = 2; i <= n; i++) res *= i; factCache[n] = res; return res; }
+        function poisson(k, lambda) { if (k > 25 || isNaN(lambda) || lambda < 0) return 0; return (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k); }
+        function formatOdds(prob) { if (prob <= 0.001 || isNaN(prob)) return "N/A"; const odds = 1 / prob; return odds > 200 ? "99+" : odds.toFixed(2); }
+
+        const heroKeys = ["1", "X", "2", "O 2.5", "U 2.5", "GG"];
+        const marketGroups = {
+            "Gol Base": ["O 1.5", "U 1.5", "O 3.5", "U 3.5", "O 4.5", "U 4.5", "NG"],
+            "Multigol": ["Multigol 1-3", "Multigol 1-4", "Multigol 2-4", "Multigol 2-5", "Multigol 3-5", "Multigol 1-2"],
+            "Combo 1X2 + O/U": ["1 + O 1.5", "1 + U 1.5", "1 + O 2.5", "1 + U 2.5", "X + O 1.5", "X + U 2.5", "2 + O 1.5", "2 + O 2.5"],
+            "Combo DC + O/U": ["1X + O 1.5", "1X + U 2.5", "1X + U 3.5", "X2 + O 1.5", "X2 + U 2.5", "X2 + U 3.5", "12 + O 1.5"],
+            "Combo + GG/NG": ["1 + GG", "1 + NG", "2 + GG", "2 + NG", "1X + GG", "X2 + GG"],
+            "Cluster Ris. Esatto": ["Cluster Casa (1-0, 2-0, 2-1)", "Cluster Casa (3-0, 3-1)", "Cluster Osp. (0-1, 0-2)", "Cluster Pari (0-0, 1-1)"],
+            "Parziale / Finale": ["1/1", "X/1", "2/2", "X/X"],
+            "Props": ["Over 9.5 Corner Tot", "Corner Casa O 4.5", "Corner Osp. O 4.5", "Over 4.5 Cart. Tot", "Rigore Match SI"]
+        };
+
+        let matchDataStore = {}; 
+        let globalCart = []; 
+        let activeMatchId = 1;
+
+        const leagueStats = { "soccer_italy_serie_a": {cor: 4.8, car: 2.3, pen: 16}, "soccer_epl": {cor: 5.2, car: 1.8, pen: 12}, "soccer_spain_la_liga": {cor: 4.5, car: 2.6, pen: 18}, "soccer_germany_bundesliga": {cor: 4.9, car: 2.0, pen: 15}, "soccer_uefa_champs_league": {cor: 4.8, car: 2.2, pen: 15} };
+
+        function applyLeagueDefaults(id) { let l = document.getElementById(`m${id}-league`).value; let s = leagueStats[l] || {cor: 4.5, car: 2.2, pen: 15}; document.getElementById(`m${id}-c-cor-h`).value = s.cor.toFixed(1); document.getElementById(`m${id}-c-cor-a`).value = s.cor.toFixed(1); document.getElementById(`m${id}-c-car-h`).value = s.car.toFixed(1); document.getElementById(`m${id}-c-car-a`).value = s.car.toFixed(1); document.getElementById(`m${id}-c-pen-h`).value = s.pen; document.getElementById(`m${id}-c-pen-a`).value = s.pen; calculateMatchEngine(id); }
+
+        function saveSession() {
+            let session = { matchCount: document.getElementById('match-count').value, bank: document.getElementById('master-bank').value, cap: document.getElementById('master-cap').value, matchCap: document.getElementById('match-cap').value, mode: document.getElementById('slip-mode').value, cart: globalCart, inputs: {} };
+            for(let i=1; i<=10; i++) { let prefix = `m${i}-`; let fields = ['league', 'team-home', 'team-away', 'tier-home', 'tier-away', 'xg-home', 'xg-away', 'poss', 'c-cor-h', 'c-cor-a', 'c-car-h', 'c-car-a', 'c-pen-h', 'c-pen-a', 'pace', 'live-min', 'live-score-h', 'live-score-a', 'live-red-h', 'live-red-a', 'live-xg-h', 'live-xg-a', 'live-pen-miss-h', 'live-pen-miss-a', 'live-momentum']; fields.forEach(f => { let el = document.getElementById(prefix + f); if(el) session.inputs[prefix + f] = el.value; }); }
+            localStorage.setItem('arenaOracleSession17', JSON.stringify(session)); alert("💾 Sessione salvata con successo!");
+        }
+
+        function loadSession() {
+            let data = localStorage.getItem('arenaOracleSession17'); if(!data) { alert("Nessuna sessione trovata."); return; } let session = JSON.parse(data);
+            document.getElementById('match-count').value = session.matchCount || 1; document.getElementById('master-bank').value = session.bank || 1000; document.getElementById('master-cap').value = session.cap || 20; if(session.matchCap) document.getElementById('match-cap').value = session.matchCap; if(session.mode) document.getElementById('slip-mode').value = session.mode;
+            for (const [key, value] of Object.entries(session.inputs)) { let el = document.getElementById(key); if(el && value !== undefined) { el.value = value; if(key.includes('-poss')) updatePossessionUI(key.split('-')[0].replace('m','')); } }
+            globalCart = session.cart || []; buildMatchUI(); renderCart(); alert("📂 Sessione ripristinata!");
+        }
+
+        let isPercentageMode = false;
+        function openCalc(targetId, title, isPct=false) { document.getElementById('calc-target').value = targetId; document.getElementById('calc-title').textContent = "Calcolo: " + title; document.getElementById('calc-events').value = ''; document.getElementById('calc-games').value = ''; isPercentageMode = isPct; document.getElementById('calc-modal').style.display = 'flex'; }
+        function closeCalc() { document.getElementById('calc-modal').style.display = 'none'; }
+        function applyCalc() { let ev = parseFloat(document.getElementById('calc-events').value); let gm = parseFloat(document.getElementById('calc-games').value); if(gm > 0 && ev >= 0) { let res = ev / gm; if(isPercentageMode) res = res * 100; let targetId = document.getElementById('calc-target').value; document.getElementById(targetId).value = res.toFixed(1); calculateMatchEngine(targetId.split('-')[0].replace('m', '')); } closeCalc(); }
+
+        function getCombinations(array, size) { let result = []; function p(t, i) { if (t.length === size) { result.push(t); return; } if (i + 1 <= array.length) { p(t.concat(array[i]), i + 1); p(t, i + 1); } } p([], 0); return result; }
+        function updatePossessionUI(id) { let val = parseInt(document.getElementById(`m${id}-poss`).value); document.getElementById(`m${id}-poss-h`).textContent = val + "%"; document.getElementById(`m${id}-poss-a`).textContent = (100 - val) + "%"; calculateMatchEngine(id); }
+        function resetSliders(id) { let el = document.getElementById(`m${id}-poss`); if(el) { el.value = 50; updatePossessionUI(id); } el = document.getElementById(`m${id}-pace`); if(el) { el.value = 0;} el = document.getElementById(`m${id}-tier-home`); if(el) el.value = "2"; el = document.getElementById(`m${id}-tier-away`); if(el) el.value = "2"; el = document.getElementById(`m${id}-live-min`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-score-h`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-score-a`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-red-h`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-red-a`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-xg-h`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-xg-a`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-pen-miss-h`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-pen-miss-a`); if(el) el.value = 0; el = document.getElementById(`m${id}-live-momentum`); if(el) el.value = 0; calculateMatchEngine(id); }
+        function openTab(matchId, tabName) { let tabs = document.querySelectorAll(`#m${matchId}-tabs .tab-btn`); tabs.forEach(t => t.classList.remove('active')); let contents = document.querySelectorAll(`.tc-m${matchId}`); contents.forEach(c => c.classList.remove('active')); document.querySelector(`#m${matchId}-tabs .btn-${tabName}`).classList.add('active'); document.getElementById(`m${matchId}-tab-${tabName}`).classList.add('active'); }
+        function buildCard(name, prob, baseProb, matchId) { let oddsStr = `@${formatOdds(prob)}`; if(baseProb && Math.abs(prob - baseProb) > 0.01) oddsStr = `<s>@${formatOdds(baseProb)}</s> 👉 @${formatOdds(prob)}`; return `<div class="stat-card" onclick="addToCart(${matchId}, '${name}')"><span class="stat-name">${name}</span><span class="stat-prob">${(prob*100).toFixed(1)}%</span><span class="stat-odds">${oddsStr}</span></div>`; }
+        function buildPodium(scores) { const colors = ['podium-gold', 'podium-silver', 'podium-bronze']; let html = ''; for(let i=0; i<3; i++) { html += `<div class="podium-box ${colors[i]}"><span class="p-score">${scores[i].text}</span><span class="p-prob">${(scores[i].prob*100).toFixed(1)}%</span></div>`; } return html; }
+
+        function initWorkspace() {
+            let count = parseInt(document.getElementById('match-count').value) || 3;
+            let tabsHtml = ''; let leftHtml = ''; let centerHtml = '';
+            for(let i=1; i<=10; i++) {
+                if(i <= count) tabsHtml += `<button class="m-tab" id="tab-btn-${i}" onclick="selectMatch(${i})">🏟️ MATCH ${i}</button>`;
+                leftHtml += `
+                <div class="panel-view" id="left-panel-${i}">
+                    <div class="input-grid-2">
+                        <div class="input-box" style="border-color: var(--gold-accent); grid-column: span 2;"><label style="color:var(--gold-accent)">Lega (Autofill)</label><select id="m${i}-league" onchange="applyLeagueDefaults(${i})"><option value="soccer_italy_serie_a" style="color:#000;" selected>🇮🇹 Serie A</option><option value="soccer_epl" style="color:#000;">🇬🇧 Premier</option><option value="soccer_spain_la_liga" style="color:#000;">🇪🇸 La Liga</option><option value="soccer_germany_bundesliga" style="color:#000;">🇩🇪 Bundesliga</option><option value="soccer_uefa_champs_league" style="color:#000;">🇪🇺 Champions</option></select></div>
+                        <div class="input-box box-home"><label>Casa & Tier</label><div style="display:flex;"><select id="m${i}-tier-home" style="width:30%; border-bottom: 2px solid var(--cyan-accent);" onchange="calculateMatchEngine(${i})"><option value="4" style="color:#000;">🌟</option><option value="3" style="color:#000;">🛡️</option><option value="2" style="color:#000;" selected>⚖️</option><option value="1" style="color:#000;">🛑</option></select><input type="text" id="m${i}-team-home" placeholder="Casa"></div></div>
+                        <div class="input-box box-away"><label>Ospite & Tier</label><div style="display:flex;"><input type="text" id="m${i}-team-away" placeholder="Ospite"><select id="m${i}-tier-away" style="width:30%; border-bottom: 2px solid var(--violet-accent);" onchange="calculateMatchEngine(${i})"><option value="4" style="color:#000;">🌟</option><option value="3" style="color:#000;">🛡️</option><option value="2" style="color:#000;" selected>⚖️</option><option value="1" style="color:#000;">🛑</option></select></div></div>
+                        <div class="input-box box-home"><label>xG Base Casa</label><input type="number" id="m${i}-xg-home" value="1.6" step="0.1" oninput="calculateMatchEngine(${i})"></div>
+                        <div class="input-box box-away"><label>xG Base Ospiti</label><input type="number" id="m${i}-xg-away" value="1.1" step="0.1" oninput="calculateMatchEngine(${i})"></div>
+                    </div>
+                    <button class="api-btn" onclick="fetchOddsH2H(${i})">📡 Auto-Scan API TheOdds</button>
+                    <div class="live-panel"><div class="live-title">LIVE CONSOLE (IN-PLAY)</div><div class="input-grid-3"><div class="input-box"><label>Min</label><input type="number" id="m${i}-live-min" value="0" min="0" max="90" oninput="calculateMatchEngine(${i})"></div><div class="input-box"><label>Gol (C)</label><input type="number" id="m${i}-live-score-h" value="0" oninput="calculateMatchEngine(${i})"></div><div class="input-box"><label>Gol (O)</label><input type="number" id="m${i}-live-score-a" value="0" oninput="calculateMatchEngine(${i})"></div></div><div class="input-grid-2"><div class="input-box"><label style="color:var(--red-value);">🔴 Rossi (C)</label><input type="number" id="m${i}-live-red-h" value="0" style="color:var(--red-value);" oninput="calculateMatchEngine(${i})"></div><div class="input-box"><label style="color:var(--red-value);">🔴 Rossi (O)</label><input type="number" id="m${i}-live-red-a" value="0" style="color:var(--red-value);" oninput="calculateMatchEngine(${i})"></div><div class="input-box"><label>xG Live (C)</label><input type="number" id="m${i}-live-xg-h" value="0" step="0.01" oninput="calculateMatchEngine(${i})"></div><div class="input-box"><label>xG Live (O)</label><input type="number" id="m${i}-live-xg-a" value="0" step="0.01" oninput="calculateMatchEngine(${i})"></div></div><div class="input-box" style="margin-bottom:10px;"><label style="color:var(--gold-accent)">Momentum / Inerzia</label><select id="m${i}-live-momentum" onchange="calculateMatchEngine(${i})"><option value="0" style="color:#000;" selected>⚖️ Neutro</option><option value="1" style="color:#000;">🔥 Assedio Casa</option><option value="-1" style="color:#000;">🔥 Assedio Ospite</option><option value="-2" style="color:#000;">💤 Partita Morta</option></select></div></div>
+                    <div class="possession-container"><div style="font-size:0.7rem; color:var(--gold-accent); font-weight:900; margin-bottom:10px;">DOMINIO TERRITORIALE</div><div class="poss-slider-wrapper"><div class="poss-label poss-label-h" id="m${i}-poss-h">50%</div><input type="range" class="poss-slider" id="m${i}-poss" min="20" max="80" value="50" oninput="updatePossessionUI(${i})"><div class="poss-label poss-label-a" id="m${i}-poss-a">50%</div></div></div>
+                    <div class="input-box" style="margin-bottom:15px;"><label>Pace (Biscotto vs Box-to-Box)</label><input type="range" class="poss-slider" style="height:4px; border-color:var(--text-muted);" id="m${i}-pace" min="-5" max="5" value="0" oninput="calculateMatchEngine(${i})"></div>
+                    <div class="section-title">Props Base (🧮 Auto Media)</div><div class="input-grid-3"><div class="input-box box-home"><button class="btn-calc" onclick="openCalc('m${i}-c-cor-h', 'Corner Casa')">🧮</button><label>Cor C.</label><input type="number" id="m${i}-c-cor-h" value="4.8" step="0.1" oninput="calculateMatchEngine(${i})"></div><div class="input-box box-home"><button class="btn-calc" onclick="openCalc('m${i}-c-car-h', 'Cart. C.')">🧮</button><label>Car C.</label><input type="number" id="m${i}-c-car-h" value="2.3" step="0.1" oninput="calculateMatchEngine(${i})"></div><div class="input-box box-home"><label>Rig C %</label><input type="number" id="m${i}-c-pen-h" value="16" oninput="calculateMatchEngine(${i})"></div><div class="input-box box-away"><button class="btn-calc" onclick="openCalc('m${i}-c-cor-a', 'Corner Osp')">🧮</button><label>Cor O.</label><input type="number" id="m${i}-c-cor-a" value="4.8" step="0.1" oninput="calculateMatchEngine(${i})"></div><div class="input-box box-away"><button class="btn-calc" onclick="openCalc('m${i}-c-car-a', 'Cart. Osp')">🧮</button><label>Car O.</label><input type="number" id="m${i}-c-car-a" value="2.3" step="0.1" oninput="calculateMatchEngine(${i})"></div><div class="input-box box-away"><label>Rig O %</label><input type="number" id="m${i}-c-pen-a" value="16" oninput="calculateMatchEngine(${i})"></div></div>
+                </div>`;
+                centerHtml += `
+                <div class="panel-view" id="center-panel-${i}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+                        <div style="font-size:1.5rem; font-weight:900;"><span style="color:var(--cyan-accent)" id="m${i}-th-disp">CASA</span> - <span style="color:var(--violet-accent)" id="m${i}-ta-disp">OSPITE</span></div>
+                        <div style="display:flex; gap:15px; text-align:center;"><div><div style="font-size:0.6rem; color:var(--text-muted);">xG CASA</div><div id="m${i}-eff-xg-h" style="font-size:1.4rem; font-weight:900; color:var(--cyan-accent);">1.60</div></div><div><div style="font-size:0.6rem; color:var(--text-muted);">xG OSPITI</div><div id="m${i}-eff-xg-a" style="font-size:1.4rem; font-weight:900; color:var(--violet-accent);">1.10</div></div></div>
+                    </div>
+                    <button class="btn-broadcast" onclick="openCompEditor(${i})">📺 ON AIR: CREA GRAFICA QUOTE</button>
+                    <div class="hero-odds-grid" id="m${i}-hero"></div>
+                    <div class="dual-radar-wrapper"><div class="radar-container radar-container-safe"><div class="radar-header radar-header-safe">🛡️ Alta Frequenza (>75%)</div><div class="radar-grid" id="m${i}-radar-safe"></div></div><div class="radar-container"><div class="radar-header">🎯 Valore (Drop Limit)</div><div class="radar-grid" id="m${i}-radar-value"></div></div></div>
+                    <div style="display:flex; gap:15px; margin-bottom:20px;"><div style="flex:1;"><div class="section-title">HEATMAP</div><div class="matrix-container" id="m${i}-matrix"></div></div><div style="flex:1;"><div class="section-title">TOP RISULTATI</div><div class="podium-container" id="m${i}-podium" style="flex-direction:column; gap:5px; margin-bottom:0;"></div></div></div>
+                    <div class="tabs-nav" id="m${i}-tabs"><button class="tab-btn btn-gol active" onclick="openTab(${i}, 'gol')">⚽ GOL & ESITI</button><button class="tab-btn btn-combo" onclick="openTab(${i}, 'combo')">🔗 COMBO</button><button class="tab-btn btn-spec" onclick="openTab(${i}, 'spec')">🎯 RIS. ESATTI & PROPS</button></div>
+                    <div id="m${i}-tab-gol" class="tab-content tc-m${i} active"></div><div id="m${i}-tab-combo" class="tab-content tc-m${i}"></div><div id="m${i}-tab-spec" class="tab-content tc-m${i}"></div>
+                </div>`;
+            }
+            document.getElementById('match-tabs-container').innerHTML = tabsHtml; document.getElementById('col-left').innerHTML = leftHtml; document.getElementById('col-center').innerHTML = centerHtml;
+            for(let i=1; i<=count; i++) calculateMatchEngine(i);
+            activeMatchId = 1; selectMatch(1); renderCart();
+        }
+
+        function selectMatch(id) {
+            activeMatchId = id;
+            document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('#col-left .panel-view').forEach(p => p.classList.remove('active')); document.querySelectorAll('#col-center .panel-view').forEach(p => p.classList.remove('active'));
+            let btn = document.getElementById(`tab-btn-${id}`); if(btn) btn.classList.add('active'); let pl = document.getElementById(`left-panel-${id}`); if(pl) pl.classList.add('active'); let pc = document.getElementById(`center-panel-${id}`); if(pc) pc.classList.add('active');
+        }
+
+        function getDixonColesGrid(xgH, xgA, pace = 0) { let grid = []; let sum = 0; let rho = -0.15 + (pace * 0.06); rho = Math.max(-0.65, Math.min(0.15, rho)); for(let h=0; h<=6; h++) { grid[h] = []; for(let a=0; a<=6; a++) { let prob = poisson(h, xgH) * poisson(a, xgA); if (h === 0 && a === 0) prob *= Math.max(0, 1 - (xgH * xgA * rho)); else if (h === 1 && a === 0) prob *= Math.max(0, 1 + (xgH * rho)); else if (h === 0 && a === 1) prob *= Math.max(0, 1 + (xgA * rho)); else if (h === 1 && a === 1) prob *= Math.max(0, 1 - rho); grid[h][a] = prob; sum += prob; } } for(let h=0; h<=6; h++) for(let a=0; a<=6; a++) grid[h][a] /= sum; return grid; }
+
+        function calcMarketsFromGrid(grid, xgH, xgA, liveMin) {
+            let m = {}; heroKeys.forEach(k => m[k] = 0); for(let cat in marketGroups) marketGroups[cat].forEach(k => m[k] = 0);
+            for(let h=0; h<=6; h++) { for(let a=0; a<=6; a++) {
+                let prob = grid[h][a]; let totalG = h+a; 
+                if(h>a) m["1"] += prob; if(h===a) m["X"] += prob; if(h<a) m["2"] += prob; if(h>=a) m["1X"] += prob; if(h<=a) m["X2"] += prob; if(h!==a) m["12"] += prob;
+                if(totalG>1.5) m["O 1.5"] += prob; else m["U 1.5"] += prob; if(totalG>2.5) m["O 2.5"] += prob; else m["U 2.5"] += prob; if(totalG>3.5) m["O 3.5"] += prob; else m["U 3.5"] += prob; if(totalG>4.5) m["O 4.5"] += prob; else m["U 4.5"] += prob;
+                if(h>0 && a>0) m["GG"] += prob; else m["NG"] += prob;
+                if(totalG>=1 && totalG<=2) m["Multigol 1-2"] += prob; if(totalG>=1 && totalG<=3) m["Multigol 1-3"] += prob; if(totalG>=1 && totalG<=4) m["Multigol 1-4"] += prob; if(totalG>=2 && totalG<=4) m["Multigol 2-4"] += prob; if(totalG>=2 && totalG<=5) m["Multigol 2-5"] += prob; if(totalG>=3 && totalG<=5) m["Multigol 3-5"] += prob;
+                if((h===1 && a===0)||(h===2 && a===0)||(h===2 && a===1)) m["Cluster Casa (1-0, 2-0, 2-1)"] += prob; if((h===3 && a===0)||(h===3 && a===1)) m["Cluster Casa (3-0, 3-1)"] += prob; if((h===0 && a===1)||(h===0 && a===2)) m["Cluster Osp. (0-1, 0-2)"] += prob; if((h===0 && a===0)||(h===1 && a===1)) m["Cluster Pari (0-0, 1-1)"] += prob;
+                let isGG = (h>0 && a>0); let isNG = !isGG;
+                if(h>a && totalG>1.5) m["1 + O 1.5"] += prob; if(h>a && totalG<=1.5) m["1 + U 1.5"] += prob; if(h>a && totalG>2.5) m["1 + O 2.5"] += prob; if(h>a && totalG<=2.5) m["1 + U 2.5"] += prob;
+                if(h===a && totalG>1.5) m["X + O 1.5"] += prob; if(h===a && totalG<=2.5) m["X + U 2.5"] += prob;
+                if(h<a && totalG>1.5) m["2 + O 1.5"] += prob; if(h<a && totalG>2.5) m["2 + O 2.5"] += prob;
+                if(h>=a && totalG>1.5) m["1X + O 1.5"] += prob; if(h>=a && totalG<=2.5) m["1X + U 2.5"] += prob; if(h>=a && totalG<=3.5) m["1X + U 3.5"] += prob;
+                if(h<=a && totalG>1.5) m["X2 + O 1.5"] += prob; if(h<=a && totalG<=2.5) m["X2 + U 2.5"] += prob; if(h<=a && totalG<=3.5) m["X2 + U 3.5"] += prob;
+                if(h!==a && totalG>1.5) m["12 + O 1.5"] += prob;
+                if(h>a && isGG) m["1 + GG"] += prob; if(h>a && isNG) m["1 + NG"] += prob; if(h<a && isGG) m["2 + GG"] += prob; if(h<a && isNG) m["2 + NG"] += prob; if(h>=a && isGG) m["1X + GG"] += prob; if(h<=a && isGG) m["X2 + GG"] += prob;
+            }}
+            if (liveMin === 0) { let htH = xgH*0.45; let htA = xgA*0.45; let shH = xgH*0.55; let shA = xgA*0.55; for(let h1=0; h1<=6; h1++) { for(let a1=0; a1<=6; a1++) { let pHT = poisson(h1, htH)*poisson(a1, htA); let sHT = h1>a1 ? '1' : (h1===a1 ? 'X' : '2'); for(let h2=0; h2<=6; h2++) { for(let a2=0; a2<=6; a2++) { let pSH = poisson(h2, shH)*poisson(a2, shA); let ftH = h1+h2; let ftA = a1+a2; let sFT = ftH>ftA ? '1' : (ftH===ftA ? 'X' : '2'); if(m[`${sHT}/${sFT}`] !== undefined) m[`${sHT}/${sFT}`] += (pHT * pSH); }} }} }
+            return m;
+        }
+
+        function calculateMatchEngine(id) {
+            let th = document.getElementById(`m${id}-team-home`).value || "CASA"; let ta = document.getElementById(`m${id}-team-away`).value || "OSPITE"; document.getElementById(`m${id}-th-disp`).textContent = th.toUpperCase(); document.getElementById(`m${id}-ta-disp`).textContent = ta.toUpperCase();
+            let liveMin = parseInt(document.getElementById(`m${id}-live-min`).value) || 0; let scoreH = parseInt(document.getElementById(`m${id}-live-score-h`).value) || 0; let scoreA = parseInt(document.getElementById(`m${id}-live-score-a`).value) || 0; let redH = parseInt(document.getElementById(`m${id}-live-red-h`).value) || 0; let redA = parseInt(document.getElementById(`m${id}-live-red-a`).value) || 0; let liveXgH = parseFloat(document.getElementById(`m${id}-live-xg-h`).value) || 0; let liveXgA = parseFloat(document.getElementById(`m${id}-live-xg-a`).value) || 0; let momentum = parseInt(document.getElementById(`m${id}-live-momentum`).value) || 0;
+            let baseXgH = parseFloat(document.getElementById(`m${id}-xg-home`).value); if(isNaN(baseXgH) || baseXgH <= 0) baseXgH = 0.1; let baseXgA = parseFloat(document.getElementById(`m${id}-xg-away`).value); if(isNaN(baseXgA) || baseXgA <= 0) baseXgA = 0.1;
+            let tierH = parseInt(document.getElementById(`m${id}-tier-home`).value) || 2; let tierA = parseInt(document.getElementById(`m${id}-tier-away`).value) || 2; let xgH_t = baseXgH * (1 + ((tierH - tierA) * 0.15)); let xgA_t = baseXgA * (1 + ((tierA - tierH) * 0.15));
+            xgH_t *= (1 + (redA * 0.25) - (redH * 0.20)); xgA_t *= (1 + (redH * 0.25) - (redA * 0.20));
+            let poss = parseInt(document.getElementById(`m${id}-poss`).value) || 50; let possFactorH = poss / 50; let possFactorA = (100 - poss) / 50; let xgH_p = xgH_t * possFactorH; let xgA_p = xgA_t * possFactorA;
+            let pace = parseInt(document.getElementById(`m${id}-pace`).value) || 0; let xgH_full = Math.max(0.05, xgH_p * (1 + (pace * 0.04))); let xgA_full = Math.max(0.05, xgA_p * (1 + (pace * 0.04)));
+            let timeFactor = liveMin > 0 ? Math.max(0.01, (90 - liveMin) / 90) : 1; let xgH_rem = xgH_full * timeFactor; let xgA_rem = xgA_full * timeFactor;
+            if (liveMin > 0) { if (liveXgH > 0 || liveXgA > 0) { let exp_xg_h_now = xgH_full * (liveMin / 90); let exp_xg_a_now = xgA_full * (liveMin / 90); let perf_h = exp_xg_h_now > 0 ? (liveXgH / exp_xg_h_now) : 1; let perf_a = exp_xg_a_now > 0 ? (liveXgA / exp_xg_a_now) : 1; perf_h = Math.max(0.4, Math.min(2.5, perf_h)); perf_a = Math.max(0.4, Math.min(2.5, perf_a)); xgH_rem = xgH_rem * perf_h; xgA_rem = xgA_rem * perf_a; } if (momentum === 1) { xgH_rem *= 1.35; xgA_rem *= 0.65; } else if (momentum === -1) { xgH_rem *= 0.65; xgA_rem *= 1.35; } else if (momentum === -2) { xgH_rem *= 0.50; xgA_rem *= 0.50; } }
+            document.getElementById(`m${id}-eff-xg-h`).textContent = xgH_rem.toFixed(2); document.getElementById(`m${id}-eff-xg-a`).textContent = xgA_rem.toFixed(2);
+            let corH_base = parseFloat(document.getElementById(`m${id}-c-cor-h`).value) || 0; let corA_base = parseFloat(document.getElementById(`m${id}-c-cor-a`).value) || 0; let carH_base = parseFloat(document.getElementById(`m${id}-c-car-h`).value) || 0; let carA_base = parseFloat(document.getElementById(`m${id}-c-car-a`).value) || 0; let pPenH_base = (parseFloat(document.getElementById(`m${id}-c-pen-h`).value) || 0) / 100; let pPenA_base = (parseFloat(document.getElementById(`m${id}-c-pen-a`).value) || 0) / 100;
+            let gridRem = getDixonColesGrid(xgH_rem, xgA_rem, pace); let shiftedGrid = Array(7).fill(0).map(() => Array(7).fill(0)); let sumProb = 0;
+            for(let h=0; h<=6; h++) { for(let a=0; a<=6; a++) { let hFin = scoreH + h; let aFin = scoreA + a; if(hFin <= 6 && aFin <= 6) { shiftedGrid[hFin][aFin] += gridRem[h][a]; sumProb += gridRem[h][a]; } } }
+            if (sumProb > 0) { for(let h=0; h<=6; h++) for(let a=0; a<=6; a++) shiftedGrid[h][a] /= sumProb; } else { shiftedGrid[Math.min(6, scoreH)][Math.min(6, scoreA)] = 1; }
+            let m = calcMarketsFromGrid(shiftedGrid, xgH_rem, xgA_rem, liveMin);
+            let tCor = (corH_base*possFactorH) + (corA_base*possFactorA); let pUC = 0; for(let i=0; i<=9; i++) pUC += poisson(i, tCor); m["Over 9.5 Corner Tot"] = 1-pUC;
+            let pUCH = 0; for(let i=0; i<=4; i++) pUCH += poisson(i, corH_base*possFactorH); m["Corner Casa O 4.5"] = 1-pUCH; let pUCA = 0; for(let i=0; i<=4; i++) pUCA += poisson(i, corA_base*possFactorA); m["Corner Osp. O 4.5"] = 1-pUCA;
+            let carH_eff = (carH_base*possFactorA) * (1+(pace*0.1)); let carA_eff = (carA_base*possFactorH) * (1+(pace*0.1)); let pUCar = 0; for(let i=0; i<=4; i++) pUCar += poisson(i, carH_eff+carA_eff); m["Over 4.5 Cart. Tot"] = 1-pUCar; m["Rigore Match SI"] = 1 - ((1-(pPenH_base*(1+(pace*0.1))))*(1-(pPenA_base*(1+(pace*0.1)))));
+            matchDataStore[id] = m;
+            
+            let heroHtml = heroKeys.map(k => { let p = m[k] || 0; let o = p>0 ? (1/p).toFixed(2) : 'MAX'; return `<div class="hero-box" onclick="addToCart(${id}, '${k}')"><div class="hero-name">${k}</div><div class="hero-prob">${(p*100).toFixed(1)}%</div><div class="hero-odds">Reale: @${o}</div></div>`; }).join('');
+            document.getElementById(`m${id}-hero`).innerHTML = heroHtml;
+
+            let maxProb = 0; let exactScoresList = []; for(let h=0; h<=6; h++) { for(let a=0; a<=6; a++) { let prob = shiftedGrid[h][a]; if(prob > maxProb) maxProb = prob; exactScoresList.push({ text: `${h}-${a}`, prob: prob }); } }
+            const matrixBox = document.getElementById(`m${id}-matrix`); matrixBox.innerHTML = `<div class="matrix-corner"><span style="color:var(--cyan-accent)">CASA</span><br><span style="color:var(--violet-accent)">OSP.</span></div>` + Array.from({length:7}, (_,i)=>`<div class="matrix-header-osp">${i}</div>`).join('');
+            for(let h=0; h<=6; h++) { matrixBox.innerHTML += `<div class="matrix-header-home">${h}</div>`; for(let a=0; a<=6; a++) { let prob = shiftedGrid[h][a]; let hue = maxProb > 0 ? (prob / maxProb) * 120 : 0; matrixBox.innerHTML += `<div class="matrix-cell" style="background-color: hsl(${hue}, 85%, 25%); border-color: hsl(${hue}, 100%, 40%);">${(prob*100).toFixed(1)}</div>`; } }
+            exactScoresList.sort((a,b) => b.prob - a.prob); let podHtml = exactScoresList.slice(0,3).map((s,i) => { let cls = i===0?'podium-gold':(i===1?'podium-silver':'podium-bronze'); return `<div class="podium-box ${cls}" onclick="addToCart(${id}, '${s.text}')"><span class="p-score">${s.text}</span><span class="p-prob">${(s.prob*100).toFixed(1)}%</span></div>`; }).join(''); document.getElementById(`m${id}-podium`).innerHTML = podHtml;
+            
+            let safePicks = []; let valuePicks = []; for (let cat in marketGroups) marketGroups[cat].forEach(k => { if(m[k] >= 0.75 && !k.includes("Cluster") && !k.includes("Rigore")) safePicks.push({key: k, prob: m[k]}); if(m[k] >= 0.40 && m[k] <= 0.65 && !k.includes("1X") && !k.includes("X2")) valuePicks.push({key: k, prob: m[k]}); }); safePicks.sort((a,b) => b.prob - a.prob); valuePicks.sort((a,b) => b.prob - a.prob);
+            document.getElementById(`m${id}-radar-safe`).innerHTML = safePicks.slice(0,2).map(p => `<div class="radar-box radar-box-safe" onclick="addToCart(${id}, '${p.key}')"><div class="rb-name">${p.key}</div><div class="rb-prob">${(p.prob*100).toFixed(1)}%</div><div class="rb-odds">DL: @${((1/p.prob)*1.02).toFixed(2)}</div></div>`).join('') || `<div class="radar-box radar-box-safe"><div class="rb-name">---</div></div>`; document.getElementById(`m${id}-radar-value`).innerHTML = valuePicks.slice(0,2).map(p => `<div class="radar-box" onclick="addToCart(${id}, '${p.key}')"><div class="rb-name">${p.key}</div><div class="rb-prob">${(p.prob*100).toFixed(1)}%</div><div class="rb-odds">DL: @${((1/p.prob)*1.05).toFixed(2)}</div></div>`).join('') || `<div class="radar-box"><div class="rb-name">---</div></div>`;
+
+            let hGol = `<div class="adv-grid">` + marketGroups["Gol Base"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; document.getElementById(`m${id}-tab-gol`).innerHTML = hGol;
+            let hCombo = `<div class="market-group-title">MULTIGOL</div><div class="adv-grid" style="margin-bottom:10px;">` + marketGroups["Multigol"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; hCombo += `<div class="market-group-title">1X2 + U/O</div><div class="adv-grid" style="margin-bottom:10px;">` + marketGroups["Combo 1X2 + O/U"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; hCombo += `<div class="market-group-title">DC + U/O | GG/NG</div><div class="adv-grid">` + marketGroups["Combo DC + O/U"].map(k => buildCard(k, m[k], null, id)).join('') + marketGroups["Combo + GG/NG"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; document.getElementById(`m${id}-tab-combo`).innerHTML = hCombo;
+            let hSpec = `<div class="market-group-title">CLUSTER RISULTATO ESATTO</div><div class="adv-grid" style="margin-bottom:10px;">` + marketGroups["Cluster Ris. Esatto"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; if (liveMin === 0) hSpec += `<div class="market-group-title">PARZIALE / FINALE</div><div class="adv-grid" style="margin-bottom:10px;">` + marketGroups["Parziale / Finale"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; hSpec += `<div class="market-group-title">PROPS</div><div class="adv-grid">` + marketGroups["Props"].map(k => buildCard(k, m[k], null, id)).join('') + `</div>`; document.getElementById(`m${id}-tab-spec`).innerHTML = hSpec;
+
+            if(globalCart.some(i => i.matchId === id)) { globalCart.forEach(i => { if(i.matchId === id) i.prob = m[i.market]; }); renderCart(); }
+        }
+
+        function addToCart(matchId, market) { let prob = matchDataStore[matchId][market]; if(!prob) return; let th = document.getElementById(`m${matchId}-team-home`).value || `Match ${matchId}`; let ta = document.getElementById(`m${matchId}-team-away`).value || ``; let matchName = ta ? `${th} - ${ta}` : th; if(!globalCart.some(i => i.matchId === matchId && i.market === market)) { globalCart.push({ matchId: matchId, matchName: matchName, market: market, prob: prob, bookieOdds: 0 }); renderCart(); } }
+        function removeFromCart(index) { globalCart.splice(index, 1); renderCart(); }
+        function updateCartOdds(index, val) { globalCart[index].bookieOdds = parseFloat(val) || 0; renderCart(); }
+
+        function renderCart() {
+            const container = document.getElementById('cart-list-container'); const mode = document.getElementById('slip-mode').value; let bank = parseFloat(document.getElementById('master-bank').value) || 1000; let capPerc = parseFloat(document.getElementById('master-cap').value) || 20; let matchCapPerc = parseFloat(document.getElementById('match-cap').value) || 10; 
+            const gridMultipla = document.getElementById('slip-grid-multipla'); const gridSistema = document.getElementById('slip-grid-sistema'); const gridSingole = document.getElementById('slip-grid-singole'); const sysOptions = document.getElementById('sys-options'); const sysSelect = document.getElementById('sys-k');
+            if(globalCart.length === 0) { container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; font-weight:bold; margin-top:20px;">Nessuna selezione. Clicca sulle quote per aggiungerle.</div>'; gridMultipla.style.display = "none"; gridSistema.style.display = "none"; gridSingole.style.display = "none"; sysOptions.style.display = "none"; return; }
+            let html = ''; let totalTrueProb = 1; let totalBookieOdds = 1; let systemOddsArr = []; let totalKellyStake = 0; let activeSingles = [];
+            globalCart.forEach((item, index) => {
+                let dropLimit = (1 / item.prob) * 1.05; let bOdds = item.bookieOdds; let bNet = bOdds - 1; let q = 1 - item.prob; let kellyPct = bNet > 0 ? ((item.prob * bNet) - q) / bNet : 0; let rawStake = kellyPct > 0 ? bank * (kellyPct / 4) : 0; 
+                if(bOdds > 1) { totalTrueProb *= item.prob; totalBookieOdds *= bOdds; systemOddsArr.push(bOdds); if(bOdds > (1/item.prob) && rawStake > 0) activeSingles.push({index: index, matchId: item.matchId, rawStake: rawStake, finalStake: 0}); }
+                let resultHTML = "---"; let resClass = "";
+                if(bOdds > 1) { if(bOdds > (1/item.prob)) { resultHTML = mode === 'singole' ? '' : "Value"; resClass = "val-positive"; } else if (item.prob >= 0.75) { resultHTML = "🔒 Sicura"; resClass = "val-roccaforte"; } else { resultHTML = "Scartata"; resClass = "val-negative"; } }
+                html += `<div class="cart-item"><div class="cart-match">${item.matchName.toUpperCase()}</div><div class="cart-market">${item.market} <span style="color:var(--text-muted); font-weight:normal;">(DL: @${dropLimit.toFixed(2)})</span></div><div class="cart-odds-row"><div><input type="number" class="cart-odds-input" value="${item.bookieOdds || ''}" step="0.05" min="1" placeholder="@" oninput="updateCartOdds(${index}, this.value)"></div><div class="cart-result ${resClass}" id="cr-${index}">${resultHTML}</div></div><button class="cart-remove" onclick="removeFromCart(${index})">X</button></div>`;
+            });
+            container.innerHTML = html;
+            if(mode === 'singole') {
+                gridMultipla.style.display = "none"; gridSistema.style.display = "none"; sysOptions.style.display = "none"; gridSingole.style.display = "block"; document.getElementById('cap-box').style.display = "block"; document.getElementById('match-cap-box').style.display = "block";
+                let matchExposure = {}; activeSingles.forEach(s => { if(!matchExposure[s.matchId]) matchExposure[s.matchId] = 0; matchExposure[s.matchId] += s.rawStake; }); let matchCapAmount = bank * (matchCapPerc / 100);
+                activeSingles.forEach(s => { s.finalStake = matchExposure[s.matchId] > matchCapAmount ? s.rawStake * (matchCapAmount / matchExposure[s.matchId]) : s.rawStake; totalKellyStake += s.finalStake; });
+                let globalCapAmount = bank * (capPerc / 100); let scaleFactor = totalKellyStake > globalCapAmount ? globalCapAmount / totalKellyStake : 1; let finalTotal = 0;
+                activeSingles.forEach(s => { let actualStake = s.finalStake * scaleFactor; finalTotal += actualStake; document.getElementById(`cr-${s.index}`).innerHTML = `<span style="font-size:0.65rem;color:var(--text-muted);">Esposizione</span><br>€ ${actualStake.toFixed(0)}`; document.getElementById(`cr-${s.index}`).className = "cart-result val-positive"; });
+                document.getElementById('ptf-total-invest').textContent = `€ ${finalTotal.toFixed(0)} / € ${globalCapAmount.toFixed(0)}`;
+            } else if (mode === 'multipla') {
+                document.getElementById('cap-box').style.display = "none"; document.getElementById('match-cap-box').style.display = "none"; gridMultipla.style.display = "grid"; gridSistema.style.display = "none"; gridSingole.style.display = "none"; sysOptions.style.display = "none";
+                let totalTrueOdds = totalTrueProb > 0 ? 1 / totalTrueProb : 9999; document.getElementById('ms-bookie').textContent = `@ ${totalBookieOdds.toFixed(2)}`;
+                let edge = ((totalBookieOdds / totalTrueOdds) - 1) * 100; let bNet = totalBookieOdds - 1; let q = 1 - totalTrueProb; let kellyPct = bNet > 0 ? ((totalTrueProb * bNet) - q) / bNet : 0; 
+                const edgeUi = document.getElementById('ms-edge'); const kellyUi = document.getElementById('ms-kelly');
+                if(edge > 0) { edgeUi.className = "ms-val val-positive"; edgeUi.textContent = `+${edge.toFixed(1)}%`; if(kellyPct > 0) { kellyUi.className = "ms-val val-positive"; kellyUi.textContent = `€${(bank*kellyPct/4).toFixed(0)}`; } else { kellyUi.className = "ms-val val-negative"; kellyUi.textContent = "NO"; } } else { edgeUi.className = "ms-val val-negative"; edgeUi.textContent = `${edge.toFixed(1)}%`; kellyUi.className = "ms-val val-negative"; kellyUi.textContent = "NO"; }
+            } else {
+                document.getElementById('cap-box').style.display = "none"; document.getElementById('match-cap-box').style.display = "none"; gridMultipla.style.display = "none"; gridSistema.style.display = "grid"; gridSingole.style.display = "none"; sysOptions.style.display = "block";
+                let activeLegs = systemOddsArr.length; let currentK = parseInt(sysSelect.value); sysSelect.innerHTML = ""; for(let k=1; k<=activeLegs; k++) { let opt = document.createElement('option'); opt.value = k; opt.textContent = `${k} su ${activeLegs}`; sysSelect.appendChild(opt); } if(currentK && currentK <= activeLegs) sysSelect.value = currentK;
+                let k = parseInt(sysSelect.value) || activeLegs; let combos = getCombinations(systemOddsArr, k); let totalCombos = combos.length; let stakePerCol = bank / totalCombos; 
+                let maxWin = 0; let minWin = 999999; combos.forEach(combo => { let comboMult = 1; combo.forEach(odd => comboMult *= odd); let win = comboMult * stakePerCol; maxWin += win; if(win < minWin) minWin = win; }); if(totalCombos === 1) minWin = maxWin; if(totalCombos === 0) { minWin=0; maxWin=0; stakePerCol=0; }
+                document.getElementById('sys-combos').textContent = totalCombos; document.getElementById('sys-stake').textContent = `€ ${stakePerCol.toFixed(2)}`; document.getElementById('sys-win-max').textContent = `€ ${maxWin.toFixed(2)}`;
+            }
+        }
+
+        async function fetchOddsH2H(id) {
+            let teamHomeRaw = document.getElementById(`m${id}-team-home`).value; let teamAwayRaw = document.getElementById(`m${id}-team-away`).value; const leagueKey = document.getElementById(`m${id}-league`).value; const btn = document.querySelector(`#left-panel-${id} .api-btn`);
+            if(!teamHomeRaw || !teamAwayRaw) { alert("Inserisci le Squadre per scansionare."); return; }
+            const normHome = translateTeam(teamHomeRaw); const normAway = translateTeam(teamAwayRaw);
+            btn.textContent = "⏳ CERCO..."; btn.style.background = "var(--gold-accent)"; btn.style.color = "#000";
+            try {
+                const url = `https://api.the-odds-api.com/v4/sports/${leagueKey}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals`; const response = await fetch(url);
+                const remaining = response.headers.get('x-requests-remaining'); const used = response.headers.get('x-requests-used'); if(remaining !== null && used !== null) { const u = parseInt(used); const r = parseInt(remaining); document.getElementById('api-credits-used').textContent = u; document.getElementById('api-credits-total').textContent = u + r; const badge = document.querySelector('.api-status'); if(r <= 50) badge.classList.add('api-warning'); else badge.classList.remove('api-warning'); }
+                if (!response.ok) throw new Error("Errore API.");
+                const data = await response.json(); let matchFound = false; let bestOdds = {"1": 0, "X": 0, "2": 0, "O 2.5": 0, "U 2.5": 0};
+                for (let match of data) { let apiHome = match.home_team.toLowerCase(); let apiAway = match.away_team.toLowerCase(); if (apiHome.includes(normHome) || normHome.includes(apiHome) || apiAway.includes(normAway) || normAway.includes(apiAway) || apiHome.includes(normAway) || apiAway.includes(normHome)) { matchFound = true; match.bookmakers.forEach(bookie => { bookie.markets.forEach(market => { if (market.key === 'h2h') { market.outcomes.forEach(outcome => { let outName = outcome.name.toLowerCase(); if ((outName === apiHome || outName.includes(normHome) || normHome.includes(outName)) && outcome.price > bestOdds["1"]) bestOdds["1"] = outcome.price; if ((outName === apiAway || outName.includes(normAway) || normAway.includes(outName)) && outcome.price > bestOdds["2"]) bestOdds["2"] = outcome.price; if (outName === "draw" && outcome.price > bestOdds["X"]) bestOdds["X"] = outcome.price; }); } if (market.key === 'totals') { market.outcomes.forEach(outcome => { let outName = outcome.name.toLowerCase(); if (outName === "over" && outcome.point === 2.5 && outcome.price > bestOdds["O 2.5"]) bestOdds["O 2.5"] = outcome.price; if (outName === "under" && outcome.point === 2.5 && outcome.price > bestOdds["U 2.5"]) bestOdds["U 2.5"] = outcome.price; }); } }); }); break; } }
+                if (matchFound && (bestOdds["1"] > 0 || bestOdds["O 2.5"] > 0)) { ["1", "X", "2", "O 2.5", "U 2.5"].forEach(mk => { if(bestOdds[mk] > 0) { if(!globalCart.some(i => i.matchId === id && i.market === mk)) addToCart(id, mk); globalCart.forEach((item, index) => { if(item.matchId === id && item.market === mk) updateCartOdds(index, bestOdds[mk]); }); } }); btn.textContent = "✅ QUOTE NEL CARRELLO!"; btn.style.background = "var(--green-value)"; btn.style.color = "#fff"; } else { alert("Match non trovato sul database."); btn.textContent = "📡 Auto-Scan API TheOdds"; btn.style.background = "linear-gradient(90deg, var(--cyan-accent), #00a2ff)"; }
+            } catch (e) { alert(e.message); btn.textContent = "📡 Auto-Scan API TheOdds"; btn.style.background = "linear-gradient(90deg, var(--cyan-accent), #00a2ff)"; }
+            setTimeout(() => {btn.textContent = "📡 Auto-Scan API TheOdds"; btn.style.background = "linear-gradient(90deg, var(--cyan-accent), #00a2ff)"; btn.style.color = "#000";}, 4000);
+        }
+
+        function openEditor() { generateDraftText(); document.getElementById('editor-modal').style.display = 'flex'; }
+        function closeEditor() { document.getElementById('editor-modal').style.display = 'none'; }
+        function generateDraftText() {
+            if(globalCart.length === 0) { document.getElementById('editor-text').value = "Carrello vuoto."; return; }
+            const mode = document.getElementById('slip-mode').value; const risk = document.getElementById('editor-risk').value; let bank = parseFloat(document.getElementById('master-bank').value) || 1000; let capPerc = parseFloat(document.getElementById('master-cap').value) || 20; let matchCapPerc = parseFloat(document.getElementById('match-cap').value) || 10;
+            let title = mode === 'sistema' ? '𝗦𝗜𝗦𝗧𝗘𝗠𝗔 𝗠𝗔𝗦𝗧𝗘𝗥' : (mode === 'singole' ? '𝗣𝗢𝗥𝗧𝗙𝗢𝗟𝗜𝗢 𝗦𝗜𝗡𝗚𝗢𝗟𝗘' : '𝗠𝗨𝗟𝗧𝗜𝗣𝗟𝗔 𝗠𝗔𝗦𝗧𝗘𝗥'); let script = `🔥 𝗕𝗘𝗧𝗕𝗔𝗥 𝗢𝗥𝗔𝗖𝗟𝗘: ${title} 🔥\n\n`;
+            if(risk === 'low') script += `✅ Rischio: Basso\n\n`; else if(risk === 'high') script += `🚨 Rischio: ALTO\n\n`;
+            let totalTrueProb = 1; let totalBookieOdds = 1; let systemOddsArr = []; let totalKellyStake = 0; let scaleFactor = 1; let matchExposure = {};
+            if(mode === 'singole') { globalCart.forEach(item => { let bNet = item.bookieOdds - 1; let q = 1 - item.prob; let kellyPct = bNet > 0 ? ((item.prob * bNet) - q) / bNet : 0; if(item.bookieOdds > (1/item.prob) && kellyPct > 0) { let rawStk = bank * (kellyPct / 4); if(!matchExposure[item.matchId]) matchExposure[item.matchId] = 0; matchExposure[item.matchId] += rawStk; } }); let matchCapAmount = bank * (matchCapPerc / 100); globalCart.forEach(item => { let bNet = item.bookieOdds - 1; let q = 1 - item.prob; let kellyPct = bNet > 0 ? ((item.prob * bNet) - q) / bNet : 0; if(item.bookieOdds > (1/item.prob) && kellyPct > 0) { let rawStk = bank * (kellyPct / 4); let matchScale = matchExposure[item.matchId] > matchCapAmount ? (matchCapAmount / matchExposure[item.matchId]) : 1; totalKellyStake += rawStk * matchScale; } }); let capAmount = bank * (capPerc / 100); if(totalKellyStake > capAmount) scaleFactor = capAmount / totalKellyStake; }
+            let roccaforteText = ""; let speculativaText = ""; let nobetText = "";
+            globalCart.forEach(item => { let dropLimit = (1 / item.prob) * 1.05; let bOddsStr = item.bookieOdds > 0 ? `@${item.bookieOdds.toFixed(2)}` : `@...`; let isValue = item.bookieOdds > (1 / item.prob); let isSafe = item.prob >= 0.75; let entry = `🎯 ${item.matchName.toUpperCase()} 👉 ${item.market} (${bOddsStr})\n`; if (isSafe && !isValue) { entry += `    └ Affidabilità: ${(item.prob*100).toFixed(1)}%\n\n`; roccaforteText += entry; } else if (isValue) { entry += `    └ Drop Limit: @${dropLimit.toFixed(2)}\n`; if (mode === 'singole') { let bNet = item.bookieOdds - 1; let q = 1 - item.prob; let kellyPct = bNet > 0 ? ((item.prob * bNet) - q) / bNet : 0; if(kellyPct > 0 && item.bookieOdds > 1) { let rawStk = bank * (kellyPct / 4); let matchCapAmount = bank * (matchCapPerc / 100); let matchScale = matchExposure[item.matchId] > matchCapAmount ? (matchCapAmount / matchExposure[item.matchId]) : 1; let finalStake = rawStk * matchScale * scaleFactor; entry += `    └ Fiducia: € ${finalStake.toFixed(0)}\n`; } } entry += `\n`; speculativaText += entry; } else { entry += `    └ Scartata\n\n`; nobetText += entry; } if(item.bookieOdds > 1 && (isValue || mode !== 'singole')) { totalTrueProb *= item.prob; totalBookieOdds *= item.bookieOdds; systemOddsArr.push(item.bookieOdds); } });
+            if (roccaforteText) script += `🧱 ROCCAFORTI (Multiple)\n${roccaforteText}`; if (speculativaText) script += `💣 SPECULATIVE (Valore)\n${speculativaText}`; if (nobetText && mode === 'singole') script += `❌ SCARTATE\n${nobetText}`;
+            if(mode === 'multipla' && totalBookieOdds > 1) { let edge = ((totalBookieOdds / (1/totalTrueProb)) - 1) * 100; script += `💸 QUOTA TOTALE: @${totalBookieOdds.toFixed(2)}\n`; if(edge > 0) script += `✅ Vantaggio Matematico: +${edge.toFixed(1)}%\n`; } else if (mode === 'sistema' && systemOddsArr.length > 0) { let k = document.getElementById('sys-k').value; script += `⚙️ SISTEMA: ${k} su ${systemOddsArr.length}\n`; } 
+            document.getElementById('editor-text').value = script;
+        }
+        function copyAndPublish() { let text = document.getElementById('editor-text').value; navigator.clipboard.writeText(text).then(() => { let btn = document.querySelector('.editor-btn-pub'); btn.textContent = "✅ COPIATO!"; setTimeout(()=> { btn.textContent = "🚀 Copia testo"; closeEditor();}, 2000); }); }
+
+        // --- SISTEMA OVERLAY BROADCAST (V17) ---
+        function openCompEditor(id) {
+            let m = matchDataStore[id];
+            if(!m) { alert("Attendi il calcolo del match."); return; }
+            // Helper per precompilare aggiungendo una micro-varianza estetica per simulare i book diversi
+            const getOdd = (k, offset) => { let p = m[k]; if(!p || p<=0) return "-"; let o = 1/p; return (o + offset).toFixed(2); };
+            
+            document.getElementById('ce-gb-1').value = getOdd('1', -0.01); document.getElementById('ce-gb-x').value = getOdd('X', 0); document.getElementById('ce-gb-2').value = getOdd('2', 0.02);
+            document.getElementById('ce-gb-o').value = getOdd('O 2.5', -0.02); document.getElementById('ce-gb-u').value = getOdd('U 2.5', 0); document.getElementById('ce-gb-g').value = getOdd('GG', -0.01);
+            
+            document.getElementById('ce-si-1').value = getOdd('1', 0.02); document.getElementById('ce-si-x').value = getOdd('X', 0); document.getElementById('ce-si-2').value = getOdd('2', -0.01);
+            document.getElementById('ce-si-o').value = getOdd('O 2.5', -0.03); document.getElementById('ce-si-u').value = getOdd('U 2.5', 0.02); document.getElementById('ce-si-g').value = getOdd('GG', -0.02);
+            
+            document.getElementById('ce-dz-1').value = getOdd('1', 0); document.getElementById('ce-dz-x').value = getOdd('X', -0.03); document.getElementById('ce-dz-2').value = getOdd('2', -0.02);
+            document.getElementById('ce-dz-o').value = getOdd('O 2.5', 0); document.getElementById('ce-dz-u').value = getOdd('U 2.5', 0.01); document.getElementById('ce-dz-g').value = getOdd('GG', 0);
+
+            document.getElementById('comp-editor-modal').style.display = 'flex';
+        }
+
+        function closeCompEditor() { document.getElementById('comp-editor-modal').style.display = 'none'; }
+
+        function launchBroadcastOverlay() {
+            // Chiudi modal editor
+            closeCompEditor();
+            
+            // Popola nomi squadre e lega
+            let l = document.getElementById(`m${activeMatchId}-league`).options[document.getElementById(`m${activeMatchId}-league`).selectedIndex].text;
+            l = l.replace(/[^a-zA-Z\s]/g, '').trim().toUpperCase(); // Rimuove emoji
+            document.getElementById('bc-league').textContent = l;
+            document.getElementById('bc-home').textContent = (document.getElementById(`m${activeMatchId}-team-home`).value || "CASA").toUpperCase();
+            document.getElementById('bc-away').textContent = (document.getElementById(`m${activeMatchId}-team-away`).value || "OSPITE").toUpperCase();
+
+            // Trasferisci quote da Editor a Broadcast Screen
+            const keys = ['1','x','2','o','u','g'];
+            const books = ['gb','si','dz'];
+            books.forEach(b => {
+                keys.forEach(k => {
+                    let val = document.getElementById(`ce-${b}-${k}`).value;
+                    document.getElementById(`bo-${b}-${k}`).textContent = val || "-";
+                });
+            });
+
+            // Mostra schermo nero
+            document.getElementById('broadcast-screen').style.display = 'flex';
+        }
+
+        function closeBroadcastOverlay() {
+            document.getElementById('broadcast-screen').style.display = 'none';
+        }
+
+        initWorkspace();
+    </script>
+</body>
+</html>
