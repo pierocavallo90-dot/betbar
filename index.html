@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>BETBAR-ORACLE | V18 COMPARATOR</title>
+    <title>BETBAR-ORACLE | V19 STUDIO EDITION</title>
     
     <style>
         :root {
@@ -17,7 +17,7 @@
             --gold-accent: #fbbf24;
             --green-value: #10b981;
             --red-value: #ef4444;
-            --neon-green: #00ff00;
+            --neon-orange: #ff7700; /* Nuova tinta per lo studio BetBar */
         }
 
         * { box-sizing: border-box; }
@@ -38,8 +38,8 @@
 
         .top-nav {
             display: flex; justify-content: space-between; align-items: center; 
-            height: 60px; background: #000; border-bottom: 2px solid var(--neon-green);
-            padding: 0 20px; box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            height: 60px; background: #000; border-bottom: 2px solid var(--neon-orange);
+            padding: 0 20px; box-shadow: 0 0 20px rgba(255, 119, 0, 0.2);
             z-index: 100; position: relative;
         }
         .logo-area { font-size: 1.8rem; font-weight: 900; color: #ff6600; text-shadow: 0 0 10px rgba(255, 102, 0, 0.4); letter-spacing: 1px; text-transform: uppercase;}
@@ -48,10 +48,10 @@
         .match-tabs { display: flex; gap: 5px; flex-grow: 1; justify-content: center; overflow-x: auto; }
         .m-tab { background: transparent; color: var(--text-muted); border: none; font-weight: 900; font-size: 1rem; padding: 0 15px; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; outline: none; }
         .m-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .m-tab.active { color: var(--neon-green); border-bottom-color: var(--neon-green); background: rgba(0, 255, 0, 0.1); }
+        .m-tab.active { color: var(--neon-orange); border-bottom-color: var(--neon-orange); background: rgba(255, 119, 0, 0.1); }
         
         .top-tools { display: flex; gap: 10px; align-items: center; }
-        .gc-select { background: #0a0f1e; border: 1px solid var(--neon-green); color: #fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; outline: none; cursor: pointer;}
+        .gc-select { background: #0a0f1e; border: 1px solid var(--neon-orange); color: #fff; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; outline: none; cursor: pointer;}
         .api-status { background: rgba(0,0,0,0.8); border: 1px solid var(--cyan-accent); padding: 6px 12px; border-radius: 6px; color: var(--cyan-accent); font-weight: 900; font-size: 0.8rem; box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
 
         .main-workspace {
@@ -60,7 +60,7 @@
         }
 
         .col-left { flex: 0 0 25%; max-width: 25%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; }
-        .col-center { flex: 0 0 50%; max-width: 50%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(0,255,0,0.2); padding: 30px; box-shadow: 0 0 30px rgba(0,255,0,0.05); position: relative;}
+        .col-center { flex: 0 0 50%; max-width: 50%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(255,119,0,0.2); padding: 30px; box-shadow: 0 0 30px rgba(255,119,0,0.05); position: relative;}
         .col-right { flex: 0 0 25%; max-width: 25%; height: 100%; overflow-y: auto; background: var(--panel-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column;}
 
         .panel-view { display: none; height: 100%; }
@@ -84,15 +84,15 @@
         .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;}
         .editor-title { font-size: 1.4rem; font-weight: 900; color: #fff; display:flex; align-items:center; gap: 10px;}
         .editor-title span { color: var(--cyan-accent); }
-        .btn-broadcast { background: linear-gradient(90deg, #000, #0a1128); border: 2px solid var(--neon-green); color: var(--neon-green); padding: 12px 25px; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 1.1rem; box-shadow: 0 0 15px rgba(0,255,0,0.2); letter-spacing: 1px;}
-        .btn-broadcast:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 25px rgba(0,255,0,0.6); transform: scale(1.02); }
+        .btn-broadcast { background: linear-gradient(90deg, #000, #0a1128); border: 2px solid var(--neon-orange); color: var(--neon-orange); padding: 12px 25px; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-size: 1.1rem; box-shadow: 0 0 15px rgba(255,119,0,0.2); letter-spacing: 1px;}
+        .btn-broadcast:hover { background: var(--neon-orange); color: #000; box-shadow: 0 0 25px rgba(255,119,0,0.6); transform: scale(1.02); }
 
         .comp-grid-wrap { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px;}
         .comp-row-header { display: grid; grid-template-columns: 140px repeat(6, 1fr); gap: 10px; margin-bottom: 15px;}
         .comp-lbl { color: var(--text-muted); font-weight: 900; font-size: 0.85rem; text-align: center; text-transform: uppercase;}
         .comp-row { display: grid; grid-template-columns: 140px repeat(6, 1fr); gap: 10px; margin-bottom: 15px; align-items: center;}
         .comp-row input { background: #000; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-weight: 900; font-size: 1.2rem; text-align: center; padding: 12px 5px; border-radius: 6px; outline: none; transition: 0.2s;}
-        .comp-row input:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0,255,0,0.3); background: rgba(0,255,0,0.05);}
+        .comp-row input:focus { border-color: var(--neon-orange); box-shadow: 0 0 10px rgba(255,119,0,0.3); background: rgba(255,119,0,0.05);}
         .comp-row .bookie-name { font-size: 1.1rem; background: rgba(255,255,255,0.05); border-color: var(--gold-accent); color: var(--gold-accent);}
 
         /* TELEGRAM DESK (DESTRA) */
@@ -102,39 +102,49 @@
         .btn-tg { width: 100%; background: var(--violet-accent); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1rem; transition: 0.2s;}
         .btn-tg:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); }
 
-        /* SCHERMATA FULL-SCREEN BROADCAST (OVERLAY) */
+        /* SCHERMATA FULL-SCREEN BROADCAST (STUDIO EDITION) */
         .broadcast-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #050505; z-index: 9999; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
+            background-color: #050505; 
+            /* QUI CARICA LA TUA IMMAGINE STUDIO */
+            background-image: url('sfondo.png'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 9999; display: none;
+            flex-direction: column; align-items: center; justify-content: flex-start;
             font-family: 'Segoe UI', Arial, sans-serif; cursor: pointer;
         }
+        
         .bc-card {
-            width: 85vw; max-width: 1400px; background: #0a0a0a;
-            border: 3px solid var(--neon-green); border-radius: 24px;
-            box-shadow: 0 0 50px rgba(0, 255, 0, 0.15), inset 0 0 20px rgba(0, 255, 0, 0.05);
-            padding: 50px 60px; text-align: center; position: relative;
+            width: 80vw; max-width: 1200px; 
+            /* Effetto Vetro per far vedere lo sfondo */
+            background: rgba(10, 10, 10, 0.85); 
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--neon-orange); 
+            border-radius: 24px;
+            box-shadow: 0 0 50px rgba(255, 119, 0, 0.25), inset 0 0 20px rgba(255, 119, 0, 0.1);
+            padding: 40px 50px; text-align: center; position: relative;
+            /* Spinge la tabella verso il basso per non coprire il logo gigante nello sfondo */
+            margin-top: 30vh; 
         }
-        .bc-league { 
-            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
-            background: #000; color: var(--neon-green); border: 3px solid var(--neon-green); 
-            padding: 8px 30px; border-radius: 30px; font-weight: 900; letter-spacing: 3px; 
-            font-size: 1.4rem; text-transform: uppercase; box-shadow: 0 0 15px rgba(0,255,0,0.3);
-        }
+
+        /* Nomi squadre grandi stile tabellone stadio */
+        .bc-match { font-size: 3.5rem; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; gap: 30px; letter-spacing: 2px; text-shadow: 0 0 20px rgba(0,0,0,0.8);}
+        .bc-vs { color: var(--neon-orange); font-size: 2.5rem; text-shadow: 0 0 20px var(--neon-orange);}
         
-        .bc-title { font-size: 7rem; font-weight: 900; color: #ff6600; text-transform: uppercase; margin-top: 20px; margin-bottom: 5px; letter-spacing: -3px; line-height: 1;}
-        .bc-title span { color: #fff; }
+        .bc-table-wrap { border: 2px solid var(--neon-orange); border-radius: 16px; overflow: hidden; }
+        .bc-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.6);}
+        .bc-table th, .bc-table td { border: 1px solid rgba(255,119,0,0.5); padding: 20px 15px; text-align: center; font-size: 2.4rem; font-weight: 900; color: #fff; }
+        .bc-table th { color: #fff; text-transform: uppercase; font-size: 1.4rem; padding: 15px; background: rgba(255,119,0,0.15);}
+        .bc-table td:first-child { color: #fff; font-size: 2rem; text-transform: capitalize; background: rgba(255,255,255,0.05);}
         
-        .bc-match { font-size: 4rem; color: #fff; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; display: flex; justify-content: center; align-items: center; gap: 40px; letter-spacing: 1px;}
-        .bc-vs { color: var(--neon-green); font-size: 3.5rem; text-shadow: 0 0 20px var(--neon-green);}
-        
-        .bc-table-wrap { border: 2px solid var(--neon-green); border-radius: 16px; overflow: hidden; }
-        .bc-table { width: 100%; border-collapse: collapse; background: #000;}
-        .bc-table th, .bc-table td { border: 1px solid var(--neon-green); padding: 25px 15px; text-align: center; font-size: 2.8rem; font-weight: 900; color: #fff; }
-        .bc-table th { color: #fff; text-transform: uppercase; font-size: 1.6rem; padding: 20px; background: rgba(0,255,0,0.08);}
-        .bc-table td:first-child { color: var(--gold-accent); font-size: 2.2rem; text-transform: capitalize; background: rgba(255,255,255,0.02);}
-        
-        .bc-footer { margin-top: 30px; color: rgba(255,255,255,0.4); font-size: 1.2rem; font-weight: bold; display: flex; justify-content: space-between; padding: 0 10px;}
+        /* Evidenziazione Bookmakers come da tua richiesta */
+        .bk-goldbet { color: #FFcc00 !important; }
+        .bk-sisal { color: #00ff00 !important; }
+        .bk-dazn { font-style: italic; }
+
+        .bc-footer { margin-top: 25px; color: rgba(255,255,255,0.6); font-size: 1.1rem; font-weight: bold; display: flex; justify-content: space-between; padding: 0 10px; text-shadow: 0 0 5px #000;}
         
     </style>
 </head>
@@ -156,21 +166,14 @@
 
     <!-- MAIN WORKSPACE -->
     <div class="main-workspace">
-        <!-- COLONNA 1: SALA MACCHINE (INPUT) -->
         <div class="col-left" id="col-left"></div>
-
-        <!-- COLONNA 2: PALCOSCENICO (EDITOR) -->
         <div class="col-center" id="col-center"></div>
-
-        <!-- COLONNA 3: REGISTRATORE TELEGRAM (OUTPUT TESTUALE) -->
         <div class="col-right" id="col-right"></div>
     </div>
 
-    <!-- SCHERMATA FULL-SCREEN BROADCAST (OVERLAY) -->
+    <!-- SCHERMATA FULL-SCREEN BROADCAST (STUDIO EDITION) -->
     <div class="broadcast-screen" id="broadcast-screen" onclick="closeBroadcastOverlay()">
         <div class="bc-card">
-            <div class="bc-league" id="bc-league">SERIE A</div>
-            <div class="bc-title">BET<span>BAR</span></div>
             <div class="bc-match"><span id="bc-home">BOLOGNA</span> <span class="bc-vs">VS</span> <span id="bc-away">LAZIO</span></div>
             
             <div class="bc-table-wrap">
@@ -182,15 +185,15 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td id="bo-name-1">GoldBet</td>
+                            <td id="bo-name-1" class="bk-goldbet">GoldBet</td>
                             <td id="bo-1-1">-</td><td id="bo-x-1">-</td><td id="bo-2-1">-</td><td id="bo-o-1">-</td><td id="bo-u-1">-</td><td id="bo-g-1">-</td>
                         </tr>
                         <tr>
-                            <td id="bo-name-2">Sisal</td>
+                            <td id="bo-name-2" class="bk-sisal">Sisal</td>
                             <td id="bo-1-2">-</td><td id="bo-x-2">-</td><td id="bo-2-2">-</td><td id="bo-o-2">-</td><td id="bo-u-2">-</td><td id="bo-g-2">-</td>
                         </tr>
                         <tr>
-                            <td id="bo-name-3">DAZNBET</td>
+                            <td id="bo-name-3" class="bk-dazn">DAZNBET</td>
                             <td id="bo-1-3">-</td><td id="bo-x-3">-</td><td id="bo-2-3">-</td><td id="bo-o-3">-</td><td id="bo-u-3">-</td><td id="bo-g-3">-</td>
                         </tr>
                     </tbody>
@@ -220,9 +223,9 @@
                 // COLONNA 1: INPUT
                 leftHtml += `
                 <div class="panel-view" id="left-panel-${i}">
-                    <div class="section-title">CONFIGURAZIONE PARTITA</div>
+                    <div class="section-title">RICERCA PARTITA</div>
                     <div class="input-box">
-                        <label>Lega Coperte da API</label>
+                        <label>Lega (Circuito API)</label>
                         <select id="m${i}-league">
                             <option value="soccer_italy_serie_a" selected>🇮🇹 Serie A</option>
                             <option value="soccer_italy_serie_b">🇮🇹 Serie B</option>
@@ -236,14 +239,14 @@
                     </div>
                     <div class="input-box">
                         <label>Squadra Casa</label>
-                        <input type="text" id="m${i}-home" placeholder="es. Bologna" oninput="updateTitles(${i})">
+                        <input type="text" id="m${i}-home" placeholder="es. Milan" oninput="updateTitles(${i})">
                     </div>
                     <div class="input-box">
                         <label>Squadra Ospite</label>
-                        <input type="text" id="m${i}-away" placeholder="es. Lazio" oninput="updateTitles(${i})">
+                        <input type="text" id="m${i}-away" placeholder="es. Napoli" oninput="updateTitles(${i})">
                     </div>
                     <button class="api-btn" onclick="fetchOdds(${i})">📡 ESTRAPOLA QUOTE (API)</button>
-                    <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px;">L'API estrarrà le quote dai mercati globali. Potrai correggerle nel pannello centrale.</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px;">L'API cerca corrispondenze nei mercati globali. Usa nomi semplici (es. "Inter" invece di "FC Internazionale").</div>
                 </div>`;
 
                 // COLONNA 2: EDITOR COMPARATORE
@@ -251,11 +254,11 @@
                 <div class="panel-view" id="center-panel-${i}">
                     <div class="editor-header">
                         <div class="editor-title">EDITOR <span>COMPARATORE</span></div>
-                        <button class="btn-broadcast" onclick="launchBroadcast(${i})">📺 ON AIR</button>
+                        <button class="btn-broadcast" onclick="launchBroadcast(${i})">📺 VAI IN ONDA (F11)</button>
                     </div>
                     
                     <div style="text-align:center; margin-bottom:20px; font-size:1.8rem; font-weight:900;">
-                        <span id="m${i}-th-disp" style="color:#fff;">CASA</span> <span style="color:var(--neon-green); font-size:1.2rem; margin:0 10px;">VS</span> <span id="m${i}-ta-disp" style="color:#fff;">OSPITE</span>
+                        <span id="m${i}-th-disp" style="color:#fff;">CASA</span> <span style="color:var(--neon-orange); font-size:1.2rem; margin:0 10px;">VS</span> <span id="m${i}-ta-disp" style="color:#fff;">OSPITE</span>
                     </div>
 
                     <div class="comp-grid-wrap">
@@ -286,8 +289,8 @@
                 // COLONNA 3: TELEGRAM EXPORT
                 rightHtml += `
                 <div class="panel-view" id="right-panel-${i}" style="display:flex; flex-direction:column; height:100%;">
-                    <div class="tg-header">📝 GENERATORE TELEGRAM</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:10px;">Genera un post formattato con i dati attuali dell'Editor.</div>
+                    <div class="tg-header">📝 GENERATORE POST</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-bottom:10px;">Crea il resoconto testuale per i canali social.</div>
                     <textarea class="tg-textarea" id="m${i}-tg-text" placeholder="Il testo apparirà qui..."></textarea>
                     <div style="display:flex; gap:10px;">
                         <button class="btn-tg" style="background:#333; color:#fff;" onclick="generateTgText(${i})">Genera</button>
@@ -322,7 +325,7 @@
             document.getElementById(`m${id}-ta-disp`).textContent = a.toUpperCase();
         }
 
-        // MOTORE DI COMPARAZIONE API THE-ODDS
+        // MOTORE DI ESTRAZIONE API (Migliorato per evitare blocchi)
         async function fetchOdds(id) {
             let h = document.getElementById(`m${id}-home`).value.trim().toLowerCase();
             let a = document.getElementById(`m${id}-away`).value.trim().toLowerCase();
@@ -331,46 +334,45 @@
 
             if(!h || !a) { alert("⚠️ Inserisci il nome delle squadre prima di estrapolare le quote."); return; }
 
-            btn.textContent = "⏳ ESTRAZIONE IN CORSO..."; 
+            btn.textContent = "⏳ CONNESSIONE API..."; 
             btn.style.background = "var(--gold-accent)"; btn.style.color = "#000";
 
             try {
-                // Aggiunto btts per cercare il Gol/NoGol
-                const url = `https://api.the-odds-api.com/v4/sports/${lKey}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals,btts`;
+                // Chiedo solo h2h e totals per garantire stabilità. Il GG spesso non è fornito gratuitamente.
+                const url = `https://api.the-odds-api.com/v4/sports/${lKey}/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals`;
                 const response = await fetch(url);
                 
                 const remaining = response.headers.get('x-requests-remaining');
                 if(remaining !== null) { document.getElementById('api-credits-used').textContent = 500 - parseInt(remaining); }
 
-                if (!response.ok) throw new Error("Errore di connessione API.");
+                if (!response.ok) throw new Error("Errore API HTTP " + response.status);
                 const data = await response.json();
                 
                 let matchData = null;
-                // Ricerca Match
+                // Ricerca elastica: controlla se una stringa è contenuta nell'altra
                 for (let match of data) {
-                    let apiHome = match.home_team.toLowerCase(); let apiAway = match.away_team.toLowerCase();
-                    // Logica di tolleranza stringhe (es. manchester city = man city)
+                    let apiHome = match.home_team.toLowerCase(); 
+                    let apiAway = match.away_team.toLowerCase();
                     if (apiHome.includes(h) || h.includes(apiHome) || apiAway.includes(a) || a.includes(apiAway)) {
-                        matchData = match; break;
+                        matchData = match; 
+                        console.log("Match trovato:", matchData.home_team, "vs", matchData.away_team);
+                        break;
                     }
                 }
 
                 if (!matchData) {
-                    alert("❌ Partita non trovata. Controlla i nomi o la lega.");
+                    alert("❌ Partita non trovata. Prova a semplificare i nomi (es. 'Inter' invece di 'FC Inter').");
                     throw new Error("Match Not Found");
                 }
 
-                // Abbiamo la partita. Estraiamo fino a 3 bookmaker per riempire la griglia
                 let bookies = matchData.bookmakers || [];
-                if(bookies.length === 0) { alert("Nessuna quota disponibile per questo match."); throw new Error("No odds"); }
+                if(bookies.length === 0) { alert("Nessuna quota disponibile per questo match sui server europei."); throw new Error("No odds"); }
 
-                // Riempi le 3 righe (se il bookie esiste nell'API, metti i dati reali. Altrimenti lascia i default)
+                // Riempi le 3 righe (usiamo i primi 3 bookmakers dell'API per riempire la bozza)
                 for(let r=0; r<3; r++) {
                     let rIdx = r+1;
                     if(bookies[r]) {
                         let bk = bookies[r];
-                        // document.getElementById(`m${id}-b${rIdx}-name`).value = bk.title; // Opzionale: decommenta se vuoi che l'API sovrascriva "GoldBet" con "Bet365"
-                        
                         let oddsMap = { '1': '', 'X': '', '2': '', 'O': '', 'U': '', 'G': '' };
 
                         bk.markets.forEach(mkt => {
@@ -390,19 +392,15 @@
                                     }
                                 });
                             }
-                            if(mkt.key === 'btts') {
-                                mkt.outcomes.forEach(out => {
-                                    if(out.name.toLowerCase() === 'yes') oddsMap['G'] = out.price.toFixed(2);
-                                });
-                            }
                         });
 
-                        document.getElementById(`m${id}-b${rIdx}-1`).value = oddsMap['1'];
-                        document.getElementById(`m${id}-b${rIdx}-x`).value = oddsMap['X'];
-                        document.getElementById(`m${id}-b${rIdx}-2`).value = oddsMap['2'];
-                        document.getElementById(`m${id}-b${rIdx}-o`).value = oddsMap['O'];
-                        document.getElementById(`m${id}-b${rIdx}-u`).value = oddsMap['U'];
-                        document.getElementById(`m${id}-b${rIdx}-g`).value = oddsMap['G'];
+                        document.getElementById(`m${id}-b${rIdx}-1`).value = oddsMap['1'] || "-";
+                        document.getElementById(`m${id}-b${rIdx}-x`).value = oddsMap['X'] || "-";
+                        document.getElementById(`m${id}-b${rIdx}-2`).value = oddsMap['2'] || "-";
+                        document.getElementById(`m${id}-b${rIdx}-o`).value = oddsMap['O'] || "-";
+                        document.getElementById(`m${id}-b${rIdx}-u`).value = oddsMap['U'] || "-";
+                        // GG non fornito stabilmente dall'API base, lo lasciamo vuoto o mettiamo un placeholder
+                        document.getElementById(`m${id}-b${rIdx}-g`).value = ""; 
                     }
                 }
 
@@ -411,8 +409,8 @@
 
             } catch (e) { 
                 console.error(e);
-                btn.textContent = "📡 ESTRAPOLA QUOTE (API)"; 
-                btn.style.background = "linear-gradient(90deg, var(--cyan-accent), #00a2ff)"; btn.style.color = "#000";
+                btn.textContent = "📡 RIPROVA API"; 
+                btn.style.background = "var(--red-value)"; btn.style.color = "#fff";
             }
             
             setTimeout(() => {
@@ -422,20 +420,25 @@
             }, 3000);
         }
 
-        // GENERATORE OVERLAY BROADCAST
+        // GENERATORE OVERLAY BROADCAST (STUDIO EDITION)
         function launchBroadcast(id) {
             let h = document.getElementById(`m${id}-home`).value || "CASA";
             let a = document.getElementById(`m${id}-away`).value || "OSPITE";
-            let lSel = document.getElementById(`m${id}-league`);
-            let lText = lSel.options[lSel.selectedIndex].text.replace(/[^a-zA-Z\s]/g, '').trim().toUpperCase();
 
-            document.getElementById('bc-league').textContent = lText;
             document.getElementById('bc-home').textContent = h.toUpperCase();
             document.getElementById('bc-away').textContent = a.toUpperCase();
 
-            // Trasferisce i dati dall'Editor all'Overlay
             for(let r=1; r<=3; r++) {
-                document.getElementById(`bo-name-${r}`).textContent = document.getElementById(`m${id}-b${r}-name`).value || `Bookie ${r}`;
+                let bName = document.getElementById(`m${id}-b${r}-name`).value || `Bookie ${r}`;
+                let cellName = document.getElementById(`bo-name-${r}`);
+                cellName.textContent = bName;
+                
+                // Coloriamo i bookmaker per mantenere lo stile della foto
+                cellName.className = '';
+                if(bName.toLowerCase().includes('gold')) cellName.classList.add('bk-goldbet');
+                if(bName.toLowerCase().includes('sisal')) cellName.classList.add('bk-sisal');
+                if(bName.toLowerCase().includes('dazn')) cellName.classList.add('bk-dazn');
+
                 document.getElementById(`bo-1-${r}`).textContent = document.getElementById(`m${id}-b${r}-1`).value || "-";
                 document.getElementById(`bo-x-${r}`).textContent = document.getElementById(`m${id}-b${r}-x`).value || "-";
                 document.getElementById(`bo-2-${r}`).textContent = document.getElementById(`m${id}-b${r}-2`).value || "-";
@@ -451,13 +454,10 @@
             document.getElementById('broadcast-screen').style.display = 'none';
         }
 
-        // GENERATORE TESTO TELEGRAM
         function generateTgText(id) {
             let h = document.getElementById(`m${id}-home`).value.toUpperCase() || "CASA";
             let a = document.getElementById(`m${id}-away`).value.toUpperCase() || "OSPITE";
-            
-            let text = `🔥 BETBAR COMPARATORE: ${h} vs ${a} 🔥\n\n`;
-            
+            let text = `🔥 BETBAR: ${h} vs ${a} 🔥\n\n`;
             for(let r=1; r<=3; r++) {
                 let bn = document.getElementById(`m${id}-b${r}-name`).value;
                 let v1 = document.getElementById(`m${id}-b${r}-1`).value || "-";
@@ -471,20 +471,16 @@
                 text += `1: @${v1} | X: @${vx} | 2: @${v2}\n`;
                 text += `OV 2.5: @${vo} | UN 2.5: @${vu} | GG: @${vg}\n\n`;
             }
-            
-            text += `👉 Scegli il bookmaker con il valore migliore!\n🤖 Analisi generata da BetBar Oracle`;
+            text += `👉 Scegli la quota migliore in diretta su Twitch!\n🤖 by BetBar Oracle`;
             document.getElementById(`m${id}-tg-text`).value = text;
         }
 
         function copyTgText(id) {
             let t = document.getElementById(`m${id}-tg-text`).value;
             if(!t) return;
-            navigator.clipboard.writeText(t).then(() => {
-                alert("Testo copiato negli appunti!");
-            });
+            navigator.clipboard.writeText(t).then(() => { alert("Copiato negli appunti!"); });
         }
 
-        // Inizializza layout al primo avvio
         initWorkspace();
     </script>
 </body>
